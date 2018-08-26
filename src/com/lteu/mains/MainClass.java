@@ -19,7 +19,7 @@ public class MainClass {
 		
 		ue = services.CreateUE(Params.USER_DISRIBUTION);
 		
-		for(int i=0; i<bts.size(); i++){
+/*		for(int i=0; i<bts.size(); i++){
 			System.out.println(bts.get(i).getLocation().getX());
 		}
 		System.out.println("asgddjasdj");
@@ -33,7 +33,7 @@ public class MainClass {
 		System.out.println("random text");
 		for(int i=0; i<ue.size(); i++){
 			System.out.println(ue.get(i).getLoc().getY());
-		}
+		}*/
 	}
 
 }

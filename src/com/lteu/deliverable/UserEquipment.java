@@ -2,13 +2,16 @@ package com.lteu.deliverable;
 
 import java.util.ArrayList;
 
+import com.lteu.services.BaseStationDistance;
+
 public class UserEquipment {
 	
 	private int id;
 	private Location loc;
 	private double dataRequest;
+	private ArrayList<BaseStationDistance> nearestBaseStation;
 	private ArrayList<Double> signalStrength = new ArrayList<Double>();
-	private BaseStation bts;
+	private BaseStation associatedBTS;
 	
 	public int getId() {
 		return id;
@@ -43,18 +46,29 @@ public class UserEquipment {
 	}
 	
 	public BaseStation getBts() {
-		return bts;
+		return associatedBTS;
 	}
 	
 	public void setBts(BaseStation bts) {
-		this.bts = bts;
+		this.associatedBTS = bts;
 	}
 	
-	public UserEquipment(int id, Location loc, double dataRequest, ArrayList<Double> signalStrength) {
+	public ArrayList<BaseStationDistance> getNearestBaseStation() {
+		return nearestBaseStation;
+	}
+
+	public void setNearestBaseStation(ArrayList<BaseStationDistance> nearestBaseStation) {
+		this.nearestBaseStation = nearestBaseStation;
+	}
+	
+	public UserEquipment(int id, Location loc, double dataRequest, ArrayList<Double> signalStrength, ArrayList<BaseStationDistance> nearestBaseStation) {
 		super();
 		this.id = id;
 		this.loc = loc;
 		this.dataRequest = dataRequest;
 		this.signalStrength = signalStrength;
+		this.nearestBaseStation = nearestBaseStation;
 	}
+
+	
 }
