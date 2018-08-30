@@ -8,6 +8,6 @@ public class Params {
 	public static int USER_SEED = 1500;
 	public static String USER_DISRIBUTION = "Uniform";
 	public static String BS_DISRIBUTION = "Uniform";
-	public static int TX_POWER = 100; // units: Watt
-	public static int NOISE = 84; // units: dB
+	public static double TX_POWER = Math.pow(10,3.215); // units: dbm -- 43dbm -- 43/20 dbm -- 10^3.215 Watt
+	public static int NOISE = 84; // units: dbm
 }

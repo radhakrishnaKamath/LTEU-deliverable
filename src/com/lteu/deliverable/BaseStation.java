@@ -51,4 +51,15 @@ public class BaseStation {
 		this.usersAssociated = usersAssociated;
 	}
 	
+	public void insertUsersAssociated(UserEquipment usersAssociated) {
+		this.usersAssociated.add(usersAssociated);
+	}
+	
+	public double averageSINR(){
+		double avgSINR = 0;
+		for(int i=0; i<usersAssociated.size(); i++){
+			avgSINR = avgSINR + usersAssociated.get(i).getSINR();
+		}
+		return avgSINR/usersAssociated.size();
+	}
 }

@@ -42,19 +42,20 @@ public class Services{
 		return bsList;
 	}
 	
-	public List<UserEquipment> CreateUE(String distribution){
+	public List<UserEquipment> CreateUE(List<BaseStation> bsList, String distribution){
 		if(distribution.equals("Uniform")){
 			for(int i=0; i<Params.NUM_USERS; i++){
 				int x = randUserX.nextInt(Params.AREA);
 				int y = randUserY.nextInt(Params.AREA);
 				Location ueLoc = new Location(x,y);
-				ArrayList<BaseStationDistance> distArr = new ArrayList<BaseStationDistance>();
+				List<BaseStationDistance> distArr = new ArrayList<BaseStationDistance>();
 				for(int j=0; j<Params.NUM_BASE_STATIONS; j++){
-					distArr.add(new BaseStationDistance(j, ueLoc.Distance(bsList.get(j).getLocation())));
+					distArr.add(new BaseStationDistance(bsList.get(j), ueLoc.Distance(bsList.get(j).getLocation())));
 				}
 				Collections.sort(distArr, BaseStationDistance.Comparators.DIST);
-				ArrayList<BaseStationDistance> nearBaseStations = (ArrayList<BaseStationDistance>) distArr.subList(0, 7);
+				List<BaseStationDistance> nearBaseStations = (List<BaseStationDistance>) distArr.subList(0, 7);
 				ArrayList<Double> signal = new ArrayList<Double>();
+				
 				UserEquipment userequip = new UserEquipment(i, ueLoc, 0.0, signal, nearBaseStations);
 				ueList.add(userequip);
 			}

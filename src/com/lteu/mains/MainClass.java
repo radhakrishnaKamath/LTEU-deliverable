@@ -17,23 +17,35 @@ public class MainClass {
 		Services services = new Services();
 		bts = services.CreateBS(Params.BS_DISRIBUTION);
 		
-		ue = services.CreateUE(Params.USER_DISRIBUTION);
+		ue = services.CreateUE(bts, Params.USER_DISRIBUTION);
 		
-/*		for(int i=0; i<bts.size(); i++){
+/*		System.out.println("BTS X");
+  		for(int i=0; i<bts.size(); i++){	
 			System.out.println(bts.get(i).getLocation().getX());
 		}
-		System.out.println("asgddjasdj");
+		System.out.println("BTS Y");
 		for(int i=0; i<bts.size(); i++){
 			System.out.println(bts.get(i).getLocation().getY());
 		}
-		System.out.println("user loc");
+		System.out.println("user x");
 		for(int i=0; i<ue.size(); i++){
 			System.out.println(ue.get(i).getLoc().getX());
 		}
-		System.out.println("random text");
+		System.out.println("user y");
 		for(int i=0; i<ue.size(); i++){
 			System.out.println(ue.get(i).getLoc().getY());
 		}*/
+		
+		System.out.println("User BTS association count");
+  		for(int i=0; i<bts.size(); i++){	
+			System.out.println(bts.get(i).getUsersAssociated().size());
+		}
+		
+  		System.out.println("user SINR");
+		for(int i=0; i<ue.size(); i++){
+			System.out.println(ue.get(i).getSINR());
+		}
+		
 	}
 
 }

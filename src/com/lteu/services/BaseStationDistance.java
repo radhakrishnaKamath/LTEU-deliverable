@@ -2,15 +2,34 @@ package com.lteu.services;
 
 import java.util.Comparator;
 
+import com.lteu.deliverable.BaseStation;
+
 public class BaseStationDistance implements Comparable<BaseStationDistance>{
-	int index;
+	BaseStation bts;
 	double dist;
-	public BaseStationDistance(int index, double dist) {
-		super();
-		this.index = index;
+
+	public BaseStation getBts() {
+		return bts;
+	}
+
+	public void setBts(BaseStation bts) {
+		this.bts = bts;
+	}
+
+	public double getDist() {
+		return dist;
+	}
+
+	public void setDist(double dist) {
 		this.dist = dist;
 	}
 	
+	public BaseStationDistance(BaseStation bts, double dist) {
+		super();
+		this.bts = bts;
+		this.dist = dist;
+	}
+
 	public static class Comparators{
 		public static Comparator<BaseStationDistance> DIST = new Comparator<BaseStationDistance>() {
 			@Override
