@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import org.apache.commons.math3.distribution.PoissonDistribution;
+
 import com.lteu.deliverable.*;
 
 import com.lteu.deliverable.Params;
@@ -30,9 +33,18 @@ public class Services{
 				bsList.add(bs);
 			}
 		} else if(distribution.equals("Poisson")){
+			PoissonDistribution poisson = new PoissonDistribution (5000);
+			int x, y;
+			for(int i=0; i<100; i++){
+				x = poisson.sample();
+				y = poisson.sample();
+				System.out.println(x);
+				System.out.println(y);
+			}
+			
 			/*for(int i=0; i<Params.NUM_BASE_STATIONS; i++){
 				int x = randX.nextInt(Params.BASE_STATIONS_SEED);
-				int y = randY.nextInt(Params.BASE_STATIONS_SEED+1);
+				int y = randY.nextInt(Paramsx.BASE_STATIONS_SEED+1);
 				Location bsLoc = new Location(x,y);
 				ArrayList<UserEquipment> ue = new ArrayList<UserEquipment>();
 				BaseStation bs = new BaseStation(i, bsLoc, Params.TX_POWER, ue);
