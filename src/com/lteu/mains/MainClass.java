@@ -15,10 +15,10 @@ public class MainClass {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Services services = new Services();
-		services.CreateBS("Poisson");
-//		bts = services.CreateBS(Params.BS_DISRIBUTION);
-//		
-//		ue = services.CreateUE(bts, Params.USER_DISRIBUTION);
+//		services.CreateBS("Poisson");
+		bts = services.CreateBS(Params.BS_DISRIBUTION);
+		
+		ue = services.CreateUE(bts, Params.USER_DISRIBUTION);
 		
 /*		System.out.println("BTS X");
   		for(int i=0; i<bts.size(); i++){	
@@ -40,12 +40,12 @@ public class MainClass {
 /*		System.out.println("User BTS association count");
   		for(int i=0; i<bts.size(); i++){	
 			System.out.println(bts.get(i).getUsersAssociated().size());
-		}
+		}*/
 		
   		System.out.println("user SINR");
-		for(int i=0; i<ue.size(); i++){
-			System.out.println(ue.get(i).getSINR());
-		}*/
+		for(int i=0; i<bts.size(); i++){
+			System.out.println(bts.get(i).averageSINR());
+		}
 		
 	}
 
