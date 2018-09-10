@@ -37,15 +37,15 @@ public class MainClass {
 			System.out.println(ue.get(i).getLoc().getY());
 		}*/
 		
-/*		System.out.println("User BTS association count");
+		System.out.println("User BTS association count");
   		for(int i=0; i<bts.size(); i++){	
 			System.out.println(bts.get(i).getUsersAssociated().size());
-		}*/
+		}
 		
-  		System.out.println("user SINR");
+/*  	System.out.println("user SINR");
 		for(int i=0; i<bts.size(); i++){
 			System.out.println(bts.get(i).averageSINR());
-		}
+		}*/
 		
 	}
 
