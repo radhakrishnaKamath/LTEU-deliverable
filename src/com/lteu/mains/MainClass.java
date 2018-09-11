@@ -13,12 +13,13 @@ public class MainClass {
 	static List<BaseStation> bts;
 	static List<UserEquipment> ue;
 	public static void main(String[] args) {
+		
 		// TODO Auto-generated method stub
 		Services services = new Services();
 //		services.CreateBS("Poisson");
-		bts = services.CreateBS(Params.BS_DISRIBUTION);
-		
-		ue = services.CreateUE(bts, Params.USER_DISRIBUTION);
+		//bts = services.CreateBS(Params.BS_DISRIBUTION);
+//		int avgUserAssoc [][] = new int [bts.size()][10000];
+		//ue = services.CreateUE(bts, Params.USER_DISRIBUTION);
 		
 /*		System.out.println("BTS X");
   		for(int i=0; i<bts.size(); i++){	
@@ -36,11 +37,24 @@ public class MainClass {
 		for(int i=0; i<ue.size(); i++){
 			System.out.println(ue.get(i).getLoc().getY());
 		}*/
-		
+		int avgUserAssoc [] = new int [Params.NUM_BASE_STATIONS];
 		System.out.println("User BTS association count");
-  		for(int i=0; i<bts.size(); i++){	
-			System.out.println(bts.get(i).getUsersAssociated().size());
+		for(int j=0; j<Params.TRIALS; j++){
+			System.out.println(j);
+			bts = services.CreateBS(Params.BS_DISRIBUTION);
+			ue = services.CreateUE(bts, Params.USER_DISRIBUTION);
+			for(int i=0; i<bts.size(); i++){
+				avgUserAssoc[i] = avgUserAssoc[i] + bts.get(i).getUsersAssociated().size();
+				//System.out.println(bts.get(i).getUsersAssociated().size());
+			}
 		}
+		
+		for(int j=0; j<Params.NUM_BASE_STATIONS; j++){
+			avgUserAssoc[j] = avgUserAssoc[j]/Params.TRIALS;
+			System.out.println(avgUserAssoc[j]);
+//			System.out.println(bts.get(j).getUsersAssociated().size());
+		}
+  		
 		
 /*  	System.out.println("user SINR");
 		for(int i=0; i<bts.size(); i++){
