@@ -86,8 +86,7 @@ public class UserEquipment {
         double[] pathloss = new double[7];
         for(int i=0;i<7;i++){
             double pathlossdb = Params.TX_POWER - (130 + 60*Math.log(nearestBaseStation.get(i).getDist()));
-            pathloss[i] = ConvertdBmToWatt(pathlossdb);
-            //System.out.println("pathlossWatt: " + pathlossWatt);
+            pathloss[i] = pathlossdb;
         }
         double sinri = 0, sinroi = 0, signal;
         for(int i=0; i<7; i++){
@@ -98,9 +97,8 @@ public class UserEquipment {
                     sinroi = sinroi + pathloss[j];
                 }
             }
-            signal = sinri/(sinroi + ConvertdBmToWatt(Params.NOISE));
+            signal = sinri/(sinroi + Params.NOISE);
             signalStrength.add(signal);
-            //System.out.println("sinri: " + sinri + " sinroi: " + sinroi + " signals: " + signal);
         }
         SINR = Collections.max(signalStrength);
         associatedBTS = nearestBaseStation.get(signalStrength.indexOf(SINR)).getBts();

@@ -36,7 +36,14 @@ public class BaseStationDistance implements Comparable<BaseStationDistance>{
 			public int compare(BaseStationDistance distObj1,
 					BaseStationDistance distObj2) {
 				// TODO Auto-generated method stub
-				return (int) (distObj1.dist - distObj2.dist);
+				if((distObj1.dist - distObj2.dist)==0) {
+					return 0;
+				} else if((distObj1.dist - distObj2.dist)>0) {
+					return 1;
+				} else {
+					return -1;
+				}
+				//return (int) (distObj1.dist - distObj2.dist);
 			}
 	    };
 	}

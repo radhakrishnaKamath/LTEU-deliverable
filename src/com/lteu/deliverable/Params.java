@@ -10,5 +10,6 @@ public class Params {
 	public static String BS_DISRIBUTION = "Uniform";
 	public static double TX_POWER = 43; //Math.pow(10,3.215) watt // units: dbm -- 43dbm -- 43/20 dbm -- 10^3.215 Watt
 	public static int NOISE = 84; // units: dbm
-	public static int TRIALS = 5;// no of trials
+	public static int TRIALS = 50;// no of trials
+	public static String URL = "https://us1.unwiredlabs.com/v2/process.php";// url of open cell id
 }
