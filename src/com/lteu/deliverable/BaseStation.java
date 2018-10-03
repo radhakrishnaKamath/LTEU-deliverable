@@ -1,17 +1,17 @@
 package com.lteu.deliverable;
 
 import java.util.ArrayList;
-import com.lteu.deliverable.Location;
-import com.lteu.deliverable.UserEquipment;
+import com.lteu.deliverable.LocationLTE;
+import com.lteu.deliverable.UserEquipmentLTE;
 
 
 public class BaseStation {
     private int id;
-    private Location location;
+    private LocationLTE location;
     private double txPower;
-    private ArrayList<UserEquipment> usersAssociated;
+    private ArrayList<UserEquipmentLTE> usersAssociated;
 
-    public BaseStation(int id, Location location, double txPower, ArrayList<UserEquipment> usersAssociated) {
+    public BaseStation(int id, LocationLTE location, double txPower, ArrayList<UserEquipmentLTE> usersAssociated) {
         super();
         this.id = id;
         this.location = location;
@@ -27,19 +27,19 @@ public class BaseStation {
         this.id = id;
     }
 
-    public Location getLocation() {
+    public LocationLTE getLocation() {
         return location;
     }
 
-    public Location getLocationXChanged() {
-        return new Location(Params.AREA - location.getX(), location.getY());
+    public LocationLTE getLocationXChanged() {
+        return new LocationLTE(ParamsLTE.AREA - location.getX(), location.getY());
     }
 
-    public Location getLocationYChanged() {
-        return new Location(location.getX(), Params.AREA - location.getY());
+    public LocationLTE getLocationYChanged() {
+        return new LocationLTE(location.getX(), ParamsLTE.AREA - location.getY());
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(LocationLTE location) {
         this.location = location;
     }
 
@@ -51,15 +51,15 @@ public class BaseStation {
         this.txPower = txPower;
     }
 
-    public ArrayList<UserEquipment> getUsersAssociated() {
+    public ArrayList<UserEquipmentLTE> getUsersAssociated() {
         return usersAssociated;
     }
 
-    public void setUsersAssociated(ArrayList<UserEquipment> usersAssociated) {
+    public void setUsersAssociated(ArrayList<UserEquipmentLTE> usersAssociated) {
         this.usersAssociated = usersAssociated;
     }
 
-    public void insertUsersAssociated(UserEquipment usersAssociated) {
+    public void insertUsersAssociated(UserEquipmentLTE usersAssociated) {
         this.usersAssociated.add(usersAssociated);
     }
 

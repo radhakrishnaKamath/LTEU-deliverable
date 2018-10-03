@@ -1,9 +1,6 @@
-package com.lteu.mains;
+package com.iitm.wcn.wifi.mains;
 
 import java.util.List;
-
-import com.lteu.deliverable.*;
-import com.lteu.services.ServicesLTE;
 
 import com.iitm.wcn.wifi.entities.AccessPoint;
 import com.iitm.wcn.wifi.entities.UserEquipment;
@@ -11,47 +8,12 @@ import com.iitm.wcn.wifi.params.Params;
 import com.iitm.wcn.wifi.services.Services;
 import com.lteu.deliverable.LteuQlearning;
 
-public class MainClass {
-
-	/**
-	 * @param args
-	 */
-	static List<BaseStation> bts;
-	static List<UserEquipmentLTE> ue;
+public class Simulator {
 	private static List<AccessPoint> apList;
 	private static List<UserEquipment> ueList;
 	
+	
 	public static void main(String[] args) {
-		//------------- lte start ---------------
-		ServicesLTE servicesLTE;// = new Services();
-		double avgUserAssoc[] = new double[ParamsLTE.NUM_BASE_STATIONS];
-		double avgUserAssoc1[] = new double[ParamsLTE.NUM_BASE_STATIONS];
-		double sum1 = 0, sum2 = 0;
-		for(int j=0; j<ParamsLTE.TRIALS; j++){
-			servicesLTE = new ServicesLTE();
-			bts = servicesLTE.CreateBS(ParamsLTE.BS_DISRIBUTION);
-			ue = servicesLTE.CreateUE(bts, ParamsLTE.USER_DISRIBUTION);
-			for(int i=0; i<bts.size(); i++){
-				avgUserAssoc[i] = avgUserAssoc[i] + bts.get(i).averageSINR(); // taking avg value over all bts
-				avgUserAssoc1[i] = avgUserAssoc1[i] + bts.get(i).getUsersAssociated().size(); // taking avg value over all bts
-				//sum1 = sum1 + bts.get(j).getUsersAssociated().size();  // for taking a avg value
-			}
-//			for(int k=0; k < bts.get(0).getUsersAssociated().size(); k++) {
-//				System.out.println(bts.get(0).getUsersAssociated().get(k).getSINR());
-//			}
-			//sum2 = sum2 + sum1/bts.size();
-		}
-		//System.out.println(sum2/Params.TRIALS); // avg value
-		for(int j=0; j<ParamsLTE.NUM_BASE_STATIONS; j++){
-			avgUserAssoc[j] = avgUserAssoc[j]/ParamsLTE.TRIALS;
-			avgUserAssoc1[j] = avgUserAssoc1[j]/ParamsLTE.TRIALS;
-			System.out.println(avgUserAssoc[j]);
-		} //avgUserAssoc1[j] + " " +
-		
-		//------------- lte finish ---------------
-		
-		//------------- wifi start ---------------
-		
 		LteuQlearning lteu = new LteuQlearning();
 		Services services = new Services();
 		//Params.SIM_DURATION = 2000;
@@ -141,8 +103,6 @@ public class MainClass {
 				}
 			}    
 		}
-		
-		//------------- wifi finish ---------------
-		
 	}
+
 }

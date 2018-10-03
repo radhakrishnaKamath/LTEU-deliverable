@@ -2,11 +2,11 @@ package com.lteu.deliverable;
 
 
 
-public class Location {
+public class LocationLTE {
     private double x;
     private double y;
 
-    public Location(double x, double y) {
+    public LocationLTE(double x, double y) {
         super();
         this.x = x;
         this.y = y;
@@ -28,7 +28,7 @@ public class Location {
         this.y = y;
     }
 
-    public double Distance(Location l){
+    public double Distance(LocationLTE l){
         return Math.sqrt(Math.pow(this.x - l.getX(), 2) + Math.pow(this.y - l.getY(), 2));
     }
 }

@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.lteu.services.BaseStationDistance;
 
-public class UserEquipment {
+public class UserEquipmentLTE {
 
     private int id;
-    private Location loc;
+    private LocationLTE loc;
     private double dataRequest;
     private List<BaseStationDistance> nearestBaseStation;
     private ArrayList<Double> signalStrength = new ArrayList<Double>();
@@ -32,11 +32,11 @@ public class UserEquipment {
         this.id = id;
     }
 
-    public Location getLoc() {
+    public LocationLTE getLoc() {
         return loc;
     }
 
-    public void setLoc(Location loc) {
+    public void setLoc(LocationLTE loc) {
         this.loc = loc;
     }
 
@@ -72,7 +72,7 @@ public class UserEquipment {
         this.nearestBaseStation = nearestBaseStation;
     }
 
-    public UserEquipment(int id, Location loc, double dataRequest, ArrayList<Double> signalStrength, List<BaseStationDistance> nearestBaseStation) {
+    public UserEquipmentLTE(int id, LocationLTE loc, double dataRequest, ArrayList<Double> signalStrength, List<BaseStationDistance> nearestBaseStation) {
         super();
         this.id = id;
         this.loc = loc;
@@ -83,22 +83,28 @@ public class UserEquipment {
     }
 
     public void AddSignalStrength(){
-        double[] pathloss = new double[7];
-        for(int i=0;i<7;i++){
-            double pathlossdb = Params.TX_POWER - (130 + 60*Math.log(nearestBaseStation.get(i).getDist()));
-            pathloss[i] = pathlossdb;
+        double[] powerRecArr = new double[7];
+        for(int i=0;i<ParamsLTE.NUM_NEAR_BS;i++){
+            double powerRec = ConvertWattTodBm(ConvertdBmToWatt(ParamsLTE.TX_POWER)/100) - (17.9 + 31.6*Math.log10(nearestBaseStation.get(i).getDist()));
+            //System.out.println("power rec: " + powerRec);
+            powerRecArr[i] = powerRec;
         }
         double sinri = 0, sinroi = 0, signal;
-        for(int i=0; i<7; i++){
-            sinri = pathloss[i];
+        for(int i=0; i<ParamsLTE.NUM_NEAR_BS; i++){
+            sinri = ConvertdBmToWatt(powerRecArr[i]);
+            //System.out.println("sinri: " + sinri);
             sinroi = 0;
-            for(int j=0; j<7; j++){
+            for(int j=0; j<ParamsLTE.NUM_NEAR_BS; j++){
                 if(j!=i){
-                    sinroi = sinroi + pathloss[j];
+                    sinroi = sinroi + ConvertdBmToWatt(powerRecArr[j]);
                 }
             }
-            signal = sinri/(sinroi + Params.NOISE);
-            signalStrength.add(signal);
+            //System.out.println("sinroi: " + sinroi);
+            //System.out.println("noise: " + ConvertdBToWatt(Params.NOISE));
+            signal = sinri/(sinroi + ConvertdBToWatt(ParamsLTE.NOISE));
+            //System.out.println("signal: " + ConvertWattTodBm(signal));
+            signalStrength.add(ConvertWattTodBm(signal));
+            
         }
         SINR = Collections.max(signalStrength);
         associatedBTS = nearestBaseStation.get(signalStrength.indexOf(SINR)).getBts();
@@ -107,5 +113,13 @@ public class UserEquipment {
 
     public double ConvertdBmToWatt(double p){
         return Math.pow(10,(p/10))/1000;
+    }
+    
+    public double ConvertdBToWatt(double p){
+        return Math.pow(10,(p/10));
+    }
+    
+    public double ConvertWattTodBm(double p){
+        return 10*Math.log10(1000*p);
     }
 }
