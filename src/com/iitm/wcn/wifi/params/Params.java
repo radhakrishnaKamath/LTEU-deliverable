@@ -5,15 +5,15 @@ public class Params {
 	public static int USER_SEED = 4000;			// random number generation
 	public static int TIME_SEED = 6000;
 
-	public static int AREA = 6000;				// units: side in meters, 3000m x 2000m area
-	public static int NUM_APS = 24; 			// one AP per 250m x 250m meter area
+	public static int AREA = 500;				// units: side in meters, 500m x 500m area
+	public static int NUM_APS = 25; 			// one AP per 100m x 100m meter area
 
 	public static int USERS_PER_AP = 20; 		// 20 users per AP
 
 	public static String USER_DISTRIBUTION = "Uniform";
 	public static String AP_DISRIBUTION = "Uniform";
 	
-	public static int TX_POWER = 100; 			// milliWatt or 10*log(P/1mW)dBm
+	public static int TX_POWER = 23; 			// milliWatt or 10*log(P/1mW)dBm
 	public static int NOISE = 90; 				// dBm
 	public static int CH_FREQUENCY = 2400;		// MHz
 	public static int CH_BANDWIDTH = 20;		// Mega Hertz

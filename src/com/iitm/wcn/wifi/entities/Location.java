@@ -21,9 +21,9 @@ public class Location {
 		this.y = y;
 	}
 
-	public Location(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public Location(double x2, double y2) {
+		this.x = (int)x2;
+		this.y = (int)y2;
 	}
 	
 	/* Some useful methods */

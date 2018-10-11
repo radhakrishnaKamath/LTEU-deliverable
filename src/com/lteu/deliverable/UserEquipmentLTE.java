@@ -3,14 +3,20 @@ package com.lteu.deliverable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
+import com.iitm.wcn.wifi.entities.AccessPoint;
+import com.iitm.wcn.wifi.entities.Location;
+import com.iitm.wcn.wifi.entities.UserEquipment;
+import com.iitm.wcn.wifi.params.Params;
 import com.lteu.services.BaseStationDistance;
 
 public class UserEquipmentLTE {
 
     private int id;
-    private LocationLTE loc;
+    private Location loc;
     private double dataRequest;
+    private int dataRec;
     private List<BaseStationDistance> nearestBaseStation;
     private ArrayList<Double> signalStrength = new ArrayList<Double>();
     private BaseStation associatedBTS;
@@ -32,11 +38,11 @@ public class UserEquipmentLTE {
         this.id = id;
     }
 
-    public LocationLTE getLoc() {
+    public Location getLoc() {
         return loc;
     }
 
-    public void setLoc(LocationLTE loc) {
+    public void setLoc(Location loc) {
         this.loc = loc;
     }
 
@@ -72,7 +78,7 @@ public class UserEquipmentLTE {
         this.nearestBaseStation = nearestBaseStation;
     }
 
-    public UserEquipmentLTE(int id, LocationLTE loc, double dataRequest, ArrayList<Double> signalStrength, List<BaseStationDistance> nearestBaseStation) {
+    public UserEquipmentLTE(int id, Location loc, double dataRequest, ArrayList<Double> signalStrength, List<BaseStationDistance> nearestBaseStation) {
         super();
         this.id = id;
         this.loc = loc;
@@ -80,6 +86,24 @@ public class UserEquipmentLTE {
         this.signalStrength = signalStrength;
         this.nearestBaseStation = nearestBaseStation;
         AddSignalStrength();
+    }
+    
+    public UserEquipmentLTE(int id, 
+    		Location loc, 
+    		double dataRequest, 
+    		ArrayList<Double> signalStrength, 
+    		List<BaseStationDistance> nearestBaseStation, 
+    		BaseStation associatedBTS,
+    		AccessPoint accessPoint) {
+        super();
+        this.id = id;
+        this.loc = loc;
+        this.dataRequest = dataRequest;
+        this.signalStrength = signalStrength;
+        this.nearestBaseStation = nearestBaseStation;
+        this.associatedBTS = associatedBTS;
+        AddSignalStrengthNew(accessPoint);
+        GenerateDataReq();
     }
 
     public void AddSignalStrength(){
@@ -111,6 +135,46 @@ public class UserEquipmentLTE {
         associatedBTS.insertUsersAssociated(this);
     }
 
+    double pathLoss(double dist) {
+    	return 10 + 50*Math.log10(dist);
+    }
+    
+    public void AddSignalStrengthNew(AccessPoint accessPoint){
+    	List<Double> distanceAPUsers = new ArrayList<Double>();
+    	int apUserCount = accessPoint.getAssociatedUEList().size();
+    	
+    	double powerRecBTS = ConvertWattTodBm(ConvertdBmToWatt(ParamsLTE.TX_POWER)/100) - pathLoss(nearestBaseStation.get(0).getDist());
+    	//System.out.println("pwrRecBTS: " + powerRecBTS);
+    	double powerRecAP = ConvertWattTodBm(ConvertdBmToWatt(Params.TX_POWER)/100) - pathLoss(this.getLoc().distanceTo(accessPoint.getLoc()));
+    	if(nearestBaseStation.get(0).getBts().getId() == 2) {
+    		//System.out.println("BS dist: " + nearestBaseStation.get(0).getDist() + " AP dist: " + this.getLoc().distanceTo(accessPoint.getLoc()));
+    		//System.out.println("powerRecBS: " + powerRecBTS + " PowerRecAP: " + powerRecAP);
+    	}
+    	double[] powerRecArr = new double[apUserCount];
+    	
+    	int i=0;
+    	for(UserEquipment ueAP: accessPoint.getAssociatedUEList()){
+    		//System.out.println("actual Users near me: " + accessPoint.getAssociatedUEList().size());
+    		distanceAPUsers.add(this.getLoc().distanceTo(ueAP.getLoc()));
+        }
+		Collections.sort(distanceAPUsers);
+		//System.out.println("Users near me: " + distanceAPUsers.size());
+    	for(Double dist: distanceAPUsers) {
+          double powerRec = ConvertWattTodBm(ConvertdBmToWatt(Params.TX_POWER)/100) - pathLoss(dist);
+          powerRecArr[i] = powerRec;
+          i++;
+    	}
+        double sinri = ConvertdBmToWatt(powerRecBTS), sinroi = ConvertdBmToWatt(powerRecAP), signal;
+        //System.out.println("sinri: " + sinri + " sinroi" + sinroi);
+        for(int j=0; j<apUserCount; j++){
+            sinroi = sinroi + ConvertdBmToWatt(powerRecArr[j]);
+        }
+        signal = sinri/(sinroi + ConvertdBToWatt(ParamsLTE.NOISE));
+        SINR = ConvertWattTodBm(signal);
+        //System.out.println("SINR: " + SINR);
+        associatedBTS.insertUsersAssociated(this);
+    }
+    
     public double ConvertdBmToWatt(double p){
         return Math.pow(10,(p/10))/1000;
     }
@@ -122,4 +186,24 @@ public class UserEquipmentLTE {
     public double ConvertWattTodBm(double p){
         return 10*Math.log10(1000*p);
     }
+    
+    public void GenerateDataReq() {
+    	Random rand = new Random();
+    	int perc = rand.nextInt(ParamsLTE.USR_DATA_DISTR[2]+1);
+    	if(perc <= ParamsLTE.USR_DATA_DISTR[0]) {
+    		dataRequest = ParamsLTE.DATARATE[0];
+    	} else if(perc > ParamsLTE.USR_DATA_DISTR[0] && perc <= ParamsLTE.USR_DATA_DISTR[1]) {
+    		dataRequest = ParamsLTE.DATARATE[1];
+    	} else {
+    		dataRequest = ParamsLTE.DATARATE[2];
+    	}
+    }
+
+	public int getDataRec() {
+		return dataRec;
+	}
+
+	public void setDataRec(int dataRec) {
+		this.dataRec = dataRec;
+	}
 }

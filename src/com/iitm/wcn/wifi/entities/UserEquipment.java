@@ -33,7 +33,7 @@ public class UserEquipment {
 			powerRcvd = powerTx - pathLoss;	// in dBm
 			snr = powerRcvd - Params.NOISE; // in dBm
 			
-			System.out.println(distance+"***"+pathLoss+"--"+powerRcvd);
+			//System.out.println(distance+"***"+pathLoss+"--"+powerRcvd);
 			if( powerRcvd > maxPRcvd ) {
 				selectedAP = ap;
 				maxPRcvd = powerRcvd;
