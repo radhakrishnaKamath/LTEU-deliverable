@@ -19,7 +19,7 @@ public class Params {
 	public static int CH_BANDWIDTH = 20;		// Mega Hertz
 	public static int AP_RANGE = 50;			// radius in meters
 	
-	public static long SIM_DURATION = 24*60*60*1000*1000L;	// microseconds
+	public static long SIM_DURATION = 60*60*1000*1000L;	// microseconds //1 hr 24* is removed
 	public static int T_SLOT = 20;				// 20 micro second
 	public static int SIFS = 10;				// 10 micro second, short inter frame spacing
 	public static int DIFS = SIFS + 2 * T_SLOT;	// DCF inter frame spacing in micro seconds

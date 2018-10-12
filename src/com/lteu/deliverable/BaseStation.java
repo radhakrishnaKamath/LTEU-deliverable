@@ -37,7 +37,7 @@ public class BaseStation {
 		cTar = 0;
     }
     
-    public int LTEUTimeSlot () {
+  public int LTEUTimeSlot () {
 		r = rand.nextDouble();
 		if(r<epsilon) {
 			int action = rand.nextInt(4);
@@ -67,7 +67,7 @@ public class BaseStation {
 		}
 	}
     
-    public void updateCLAA(int i) {
+    public void updateCLAA(double i) {
     	cLAA = cLAA + i;
     }
     
@@ -83,18 +83,26 @@ public class BaseStation {
     	nextState = state;
     }
     
-    public int minAction(double qTable[][], int i) {
+    public int getCurrState() {
+    	return state;
+    }
+    
+    public void minAction() {
 		int act = 0;
 		for(int j=1; j<4; j++) {
-			if(qTable[i][act] > qTable[i][j]) {
+			if(qTable[nextState][act] > qTable[nextState][j]) {
 				act = j;
 			}
 		}
-		return act;
+		minAction = act;
 	}
+    
+    public void updateCurrState() {
+    	state = nextState;
+    }
 	
-    public void update(double qTable[][], int i, int j, double cost, double currCost, double nextCost, double alpha, double gamma) {
-		qTable[i][j] = (1-alpha) * currCost + alpha * (cost + gamma * nextCost);
+    public void update(int i, int j, double cost) {
+		qTable[i][j] = (1-alpha) * qTable[i][j] + alpha * (cost + gamma * qTable[nextState][minAction]);
 	}
 	
     /* LTEU  END*/
@@ -182,5 +190,13 @@ public class BaseStation {
         	avgthrput = avgthrput + usersAssociated.get(i).getDataRec();
         }
         return avgthrput/usersAssociated.size();
+    }
+    
+    public double averageSatis(){
+        double avgsatis = 0;
+        for(int i=0; i<usersAssociated.size(); i++){
+        	avgsatis = avgsatis + usersAssociated.get(i).getSatisfaction();
+        }
+        return avgsatis/usersAssociated.size();
     }
 }

@@ -149,17 +149,36 @@ public class MainClass {
 //			}    
 //		} 
 		
-		
 		for(BaseStation bs:bts) {
-			
+			AccessPoint ap = bs.getAccessPoint();
 			bs.initLTEU();
 			int timeLTEU = bs.LTEUTimeSlot();
 			double cost;
 			for(long time = 0; time < Params.SIM_DURATION; time += 5*Params.SIFS) {
-				for(int slotPercent=1; slotPercent<=5; slotPercent = slotPercent + timeLTEU) {
+				for(int slotPercent=1; slotPercent<=5; slotPercent++) {
 					if(slotPercent <= timeLTEU) {
+						ap.setChannelAsBusy();
 						int timeLTE = Params.SIFS * ParamsLTE.SUBFRAME_DUR;
 						int totalRB = ParamsLTE.RB * timeLTE;
+						if(ap.getTxStartTime() == time) {
+							ap.setTxStartTime(time + ap.getBackoffTime());
+							ap.putInBackoffMode();
+			                ap.updateBackoffTime();
+						} else if(ap.isInBackoffMode()) {
+							/* if the channel is busy then pause(increment) the backoff timer */
+							if(ap.isChannelBusy()) {
+								ap.setTxStartTime(ap.getTxStartTime() + Params.SIFS);
+								/* reset the channel idletimer */
+								ap.getChannel().resetIdleTimer();
+							}
+							else {
+								/* if the channel is idle for DIFS then resume(stop incrementing) the backoff timer */
+								ap.getChannel().updateIdleTimer(Params.SIFS);
+								if( ap.getChannel().getIdleTimer() < Params.DIFS ) {
+									ap.setTxStartTime( ap.getTxStartTime() + Params.SIFS );
+								}
+							}
+						}
 						for(UserEquipmentLTE ue: bs.getUsersAssociated()) {
 							double sinr = 0.0;
 							for(int s=0;s<ParamsLTE.SINR_CQI.size()-1;s++) {
@@ -179,8 +198,8 @@ public class MainClass {
 							}
 							int totalData = ParamsLTE.CQI_MCS.get(ParamsLTE.SINR_CQI.indexOf(sinr)) * ParamsLTE.RE;
 							if(ue.getDataRequest() == 512) {
-								ue.setDataRec(totalData * timeLTE);
-								bs.updateCLAA(totalData * timeLTE);
+								ue.setDataRec(totalData * timeLTE / (8 * 1024));
+								bs.updateCLAA(totalData * timeLTE /(8 * 1024 * 1024));
 								bs.updateCTAR(512);
 								totalRB = totalRB - 1*timeLTE;
 							} else if(ue.getDataRequest() == 256) {
@@ -194,39 +213,44 @@ public class MainClass {
 								bs.updateCTAR(128);
 								totalRB = totalRB - 4*timeLTE;
 							}
+							ue.setSatisfaction();
+						}
+						if(slotPercent == timeLTEU) {
+							
 							cost = bs.calculateCost();
-							System.out.println(bs.getCLAA(timeLTE * Params.SIFS));
-							//bs.setNextState(bs.nextState());
+							//System.out.println(bs.getCLAA(timeLTE * Params.SIFS));
+							bs.setNextState(bs.nextState());
+							bs.minAction();
+							bs.update(bs.getCurrState(), timeLTEU, cost);
+							
 						}
 					} else {
-						AccessPoint ap = bs.getAccessPoint();
+						ap.setChannelAsFree();
 						/* if this AP is scheduled to start at this time */
-						if( ap.getTxStartTime() == time ) {
+						if(ap.getTxStartTime() == time) {
 							// System.out.println(ap.getId() + " is scheduled at " + time);
 							/* check whether the channel is busy */
 							if(ap.isChannelBusy()) {
-								/* if busy backoff for some time */
 								ap.setTxStartTime(time + ap.getBackoffTime());
 								ap.putInBackoffMode();
 				                ap.updateBackoffTime();
-							}
-							else if(ap.waitedDIFS() == false) {
+							} else if(ap.waitedDIFS() == false) {
 								/* if channel not busy wait for DIFS time */
 								ap.setTxStartTime( time + Params.DIFS);
 								ap.waitForDIFS();						
 							}
 							else {
 								/* lock the channel */
-								System.out.println("AP " + ap.getId() + " started at time " + time);
+								//System.out.println("AP " + ap.getId() + " started at time " + time);
 								ap.setChannelAsBusy();
 								/* send data */
 				            }
 				        }
 						/* otherwise check whether the station is in backoff mode */
-						else if( ap.isInBackoffMode() ) {
+						else if(ap.isInBackoffMode()) {
 							/* if the channel is busy then pause(increment) the backoff timer */
-							if( ap.isChannelBusy() ) {
-								ap.setTxStartTime( ap.getTxStartTime() + Params.SIFS );
+							if(ap.isChannelBusy()) {
+								ap.setTxStartTime(ap.getTxStartTime() + Params.SIFS);
 								/* reset the channel idletimer */
 								ap.getChannel().resetIdleTimer();
 							}
@@ -241,8 +265,8 @@ public class MainClass {
 						
 						
 						/* set the channel free after the data transmission is completed */
-				        if( ap.getTxStartTime() + ap.getTxDuration() + Params.SIFS == time ) {
-				        	System.out.println("AP " + ap.getId() + " is completed at " + time);
+				        if( ap.getTxStartTime() + ap.getTxDuration() + Params.SIFS == time || slotPercent == 5) {
+				        	//System.out.println("AP " + ap.getId() + " is completed at " + time);
 				        	ap.setAsCompleted(time);
 				        	ap.setChannelAsFree();
 				        	
@@ -252,6 +276,7 @@ public class MainClass {
 					}
 				}
 			}
+			System.out.println("Avg thruput: " + bs.averageThroughput() + " avg satis: " + bs.averageSatis());
 		}
 		
 		

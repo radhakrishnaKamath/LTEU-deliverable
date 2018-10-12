@@ -98,18 +98,18 @@ public class AccessPoint {
 	/* set the channel of this accesspoint and it's neighbours as busy */
 	public boolean setChannelAsBusy() {
 		this.ch.setAsBusy();
-		for(AccessPoint ap: neighbours) {
-			ap.ch.setAsBusy();
-		}
+//		for(AccessPoint ap: neighbours) {
+//			ap.ch.setAsBusy();
+//		}
 		return true;
 	}
 
 	/* set the channel of this accesspoint and it's neighbours as free */
 	public boolean setChannelAsFree() {
 		this.ch.setAsFree();
-		for(AccessPoint ap: neighbours) {
-			ap.ch.setAsFree();
-		}
+//		for(AccessPoint ap: neighbours) {
+//			ap.ch.setAsFree();
+//		}
 		return true;
 	}
 

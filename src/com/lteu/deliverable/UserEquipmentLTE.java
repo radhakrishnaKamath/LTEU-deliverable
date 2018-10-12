@@ -16,12 +16,13 @@ public class UserEquipmentLTE {
     private int id;
     private Location loc;
     private double dataRequest;
-    private int dataRec;
+    private double dataRec;
     private List<BaseStationDistance> nearestBaseStation;
     private ArrayList<Double> signalStrength = new ArrayList<Double>();
     private BaseStation associatedBTS;
     private double SINR;
-
+    private double satisfaction;
+    
     public double getSINR() {
         return SINR;
     }
@@ -77,6 +78,22 @@ public class UserEquipmentLTE {
     public void setNearestBaseStation(ArrayList<BaseStationDistance> nearestBaseStation) {
         this.nearestBaseStation = nearestBaseStation;
     }
+    
+	public double getDataRec() {
+		return dataRec;
+	}
+
+	public void setDataRec(double dataRec) {
+		this.dataRec = dataRec;
+	}
+
+	public double getSatisfaction() {
+		return satisfaction;
+	}
+
+	public void setSatisfaction() {
+		this.satisfaction = dataRec/dataRequest;
+	}
 
     public UserEquipmentLTE(int id, Location loc, double dataRequest, ArrayList<Double> signalStrength, List<BaseStationDistance> nearestBaseStation) {
         super();
@@ -198,12 +215,4 @@ public class UserEquipmentLTE {
     		dataRequest = ParamsLTE.DATARATE[2];
     	}
     }
-
-	public int getDataRec() {
-		return dataRec;
-	}
-
-	public void setDataRec(int dataRec) {
-		this.dataRec = dataRec;
-	}
 }
