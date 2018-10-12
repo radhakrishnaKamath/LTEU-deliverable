@@ -30,11 +30,12 @@ public class BaseStation {
 			}
 		}
 		state = 0;
-		epsilon = rand.nextDouble();
-		alpha = rand.nextDouble();
+		epsilon = 0.03;
+		alpha = 0.5;
+		gamma = 0.9;
 		minAction = 0;
 		cLAA = 0;
-		cTar = 0;
+		cTar = 30 * 1024;
     }
     
   public int LTEUTimeSlot () {
@@ -50,17 +51,25 @@ public class BaseStation {
     public double calculateCost(){
 		return Math.abs(cTar-cLAA);
 	}
+    
+    public void initCLAA() {
+    	this.cLAA = 0;
+    }
+    
+    public int getNextState() {
+    	return nextState;
+    }
 	
     public int nextState(){
-		if(cLAA < 1) {
+		if(cLAA < 1024) {
 			return 0;
-		} else if(1 <= cLAA && cLAA < 10) {
+		} else if(1024 <= cLAA && cLAA < 10240) {
 			return 1;
-		} else if(10 <= cLAA && cLAA < 20) {
+		} else if(10240 <= cLAA && cLAA < 20480) {
 			return 2;
-		} else if(20 <= cLAA && cLAA < 30) {
+		} else if(20480 <= cLAA && cLAA < 30720) {
 			return 3;
-		} else if(30 <= cLAA && cLAA < 40) {
+		} else if(30720 <= cLAA && cLAA < 40960) {
 			return 4;
 		} else {
 			return 5;
@@ -75,8 +84,9 @@ public class BaseStation {
     	cTar = cTar + i;
     }
     
-    public double getCLAA(double time) {
-    	return cLAA/time;
+    public double getCLAA() {
+    	//System.out.println(cLAA);
+    	return cLAA;
     }
 	
     public void setNextState(int state) {

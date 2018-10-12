@@ -14,12 +14,12 @@ public class Params {
 	public static String AP_DISRIBUTION = "Uniform";
 	
 	public static int TX_POWER = 23; 			// milliWatt or 10*log(P/1mW)dBm
-	public static int NOISE = 90; 				// dBm
+	public static int NOISE = -90; 				// dBm
 	public static int CH_FREQUENCY = 2400;		// MHz
 	public static int CH_BANDWIDTH = 20;		// Mega Hertz
 	public static int AP_RANGE = 50;			// radius in meters
 	
-	public static long SIM_DURATION = 60*60*1000*1000L;	// microseconds //1 hr 24* is removed
+	public static long SIM_DURATION = 68000000; //60*60*1000*1000L;	// microseconds //1 hr 24* is removed
 	public static int T_SLOT = 20;				// 20 micro second
 	public static int SIFS = 10;				// 10 micro second, short inter frame spacing
 	public static int DIFS = SIFS + 2 * T_SLOT;	// DCF inter frame spacing in micro seconds

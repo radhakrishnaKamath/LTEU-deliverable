@@ -19,7 +19,7 @@ public class AccessPoint {
 	private long txStartTime;	// in 10 microsecond slots
 	private int backoffTime;
 	private boolean backoffStatus;
-	private int txDuration;
+	private long txDuration;
 	private boolean difsWaited;
 	
 	public int getId() {
@@ -139,7 +139,7 @@ public class AccessPoint {
 		return ch.isBusy();
 	}
 
-	public int getTxDuration() {
+	public long getTxDuration() {
 		return txDuration;
 	}
 
@@ -160,6 +160,13 @@ public class AccessPoint {
 	public void setAsCompleted(long time) {
 		this.txStartTime = time + (long)(randTime.nextDouble() * (Params.SIM_DURATION - time) / Params.SIFS) * Params.SIFS;
 		this.txDuration = Math.min((int)(Params.SIM_DURATION - txStartTime), (int)(randTime.nextDouble() * Params.MAX_TX_DURATON / Params.SIFS) * Params.SIFS);
+		this.backoffTime = Params.T_SLOT;
+		this.difsWaited = false;
+	}
+	
+	public void setRemaining(long time, long duration) {
+		this.txStartTime = time + (long)(randTime.nextDouble() * (Params.SIM_DURATION - time) / Params.SIFS) * Params.SIFS;
+		this.txDuration = duration;
 		this.backoffTime = Params.T_SLOT;
 		this.difsWaited = false;
 	}
@@ -185,5 +192,17 @@ public class AccessPoint {
 		for(UserEquipment ue: this.associatedUEList) {
 			System.out.println( ue.getId() + ": " + ue.getLoc());
 		}
+	}
+	
+	public double getAvgThroughput() {
+		double thrput = 0;
+		for(UserEquipment ue: this.associatedUEList) {
+			//System.out.println("ue thrput: " + ue.getThroughput());
+//			if(id == 2) {
+//				
+//			}
+			thrput = thrput + ue.getThroughput();
+		}
+		return thrput/this.associatedUEList.size();
 	}
 }

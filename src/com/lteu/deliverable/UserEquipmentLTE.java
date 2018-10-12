@@ -84,7 +84,7 @@ public class UserEquipmentLTE {
 	}
 
 	public void setDataRec(double dataRec) {
-		this.dataRec = dataRec;
+		this.dataRec = this.dataRec + dataRec;
 	}
 
 	public double getSatisfaction() {
@@ -161,34 +161,25 @@ public class UserEquipmentLTE {
     	int apUserCount = accessPoint.getAssociatedUEList().size();
     	
     	double powerRecBTS = ConvertWattTodBm(ConvertdBmToWatt(ParamsLTE.TX_POWER)/100) - pathLoss(nearestBaseStation.get(0).getDist());
-    	//System.out.println("pwrRecBTS: " + powerRecBTS);
     	double powerRecAP = ConvertWattTodBm(ConvertdBmToWatt(Params.TX_POWER)/100) - pathLoss(this.getLoc().distanceTo(accessPoint.getLoc()));
-    	if(nearestBaseStation.get(0).getBts().getId() == 2) {
-    		//System.out.println("BS dist: " + nearestBaseStation.get(0).getDist() + " AP dist: " + this.getLoc().distanceTo(accessPoint.getLoc()));
-    		//System.out.println("powerRecBS: " + powerRecBTS + " PowerRecAP: " + powerRecAP);
-    	}
     	double[] powerRecArr = new double[apUserCount];
     	
     	int i=0;
     	for(UserEquipment ueAP: accessPoint.getAssociatedUEList()){
-    		//System.out.println("actual Users near me: " + accessPoint.getAssociatedUEList().size());
     		distanceAPUsers.add(this.getLoc().distanceTo(ueAP.getLoc()));
         }
 		Collections.sort(distanceAPUsers);
-		//System.out.println("Users near me: " + distanceAPUsers.size());
-    	for(Double dist: distanceAPUsers) {
+		for(Double dist: distanceAPUsers) {
           double powerRec = ConvertWattTodBm(ConvertdBmToWatt(Params.TX_POWER)/100) - pathLoss(dist);
           powerRecArr[i] = powerRec;
           i++;
     	}
         double sinri = ConvertdBmToWatt(powerRecBTS), sinroi = ConvertdBmToWatt(powerRecAP), signal;
-        //System.out.println("sinri: " + sinri + " sinroi" + sinroi);
         for(int j=0; j<apUserCount; j++){
             sinroi = sinroi + ConvertdBmToWatt(powerRecArr[j]);
         }
         signal = sinri/(sinroi + ConvertdBToWatt(ParamsLTE.NOISE));
         SINR = ConvertWattTodBm(signal);
-        //System.out.println("SINR: " + SINR);
         associatedBTS.insertUsersAssociated(this);
     }
     

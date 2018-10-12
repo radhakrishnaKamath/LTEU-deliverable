@@ -88,7 +88,7 @@ public class ServicesLTE{
                 Location bsLoc = new Location(x,y);
                 //System.out.println("loc: x: " + bsLoc.getX() + " y: " + bsLoc.getY());
                 ArrayList<UserEquipmentLTE> ue = new ArrayList<UserEquipmentLTE>();
-                BaseStation bs = new BaseStation(5*i+j, bsLoc, ParamsLTE.TX_POWER, ue, apList.get(5*i+j));
+                BaseStation bs = new BaseStation((5*i)+j, bsLoc, ParamsLTE.TX_POWER, ue, apList.get(5*i+j));
                 bsList.add(bs);
     		}
         }

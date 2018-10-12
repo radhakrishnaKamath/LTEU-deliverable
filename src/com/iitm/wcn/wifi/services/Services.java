@@ -23,7 +23,6 @@ public class Services {
 		long txStartTime;
 		int txDuration;
 		
-		
 		for( int i = 0; i < Params.NUM_APS; ++i) {
 			/* generate a random starting time for this AP */
 			txStartTime = (long)(randTime.nextDouble() * (Params.SIM_DURATION / Params.SIFS)) * Params.SIFS;
@@ -49,7 +48,6 @@ public class Services {
 			
 		for( AccessPoint ap: apList ) {
 			apLoc = ap.getLoc();
-			
 			for( int j = 0; j < Params.USERS_PER_AP; ++j) {
 				theta = (randTheta.nextInt(360)) * Math.PI / 180;
 				r = randR.nextInt(Params.AP_RANGE);
@@ -61,10 +59,7 @@ public class Services {
 					j--;
 					continue;
 				}
-				
 				ue = new UserEquipment(ap.getId() * 100 + j, loc);
-				
-				
 				ueList.add(ue);
 			}
 		}
