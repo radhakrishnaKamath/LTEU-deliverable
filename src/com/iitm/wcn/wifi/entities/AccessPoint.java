@@ -197,9 +197,8 @@ public class AccessPoint {
 	public double getAvgThroughput() {
 		double thrput = 0;
 		for(UserEquipment ue: this.associatedUEList) {
-			//System.out.println("ue thrput: " + ue.getThroughput());
-//			if(id == 2) {
-//				
+//			if(id == 9) {
+//				System.out.println("ue id: " + ue.getId() +  " ue thrput: " + ue.getThroughput());				
 //			}
 			thrput = thrput + ue.getThroughput();
 		}

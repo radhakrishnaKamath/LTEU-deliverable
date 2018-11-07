@@ -193,6 +193,7 @@ public class MainClass {
 						/* set the channel free after the data transmission is completed */
 				        if( ap.getTxStartTime() + ap.getTxDuration() + Params.SIFS == time) {
 				        	//System.out.println("AP " + ap.getId() + " is completed at " + time);
+				        	System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
 				        	for(UserEquipment ue :ap.getAssociatedUEList()) {
 				        		ue.updateThroughput(ap.getTxDuration());
 				        	}
@@ -202,10 +203,10 @@ public class MainClass {
 				    		// services.printAPSchedule(apList);
 				        }
 				        if(slotPercent==5 && ap.getTxStartTime() + ap.getTxDuration() + Params.SIFS < time) {
+			        		System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
 				        	//System.out.println("AP " + ap.getId() + " is completed at " + time);
 				        	for(UserEquipment ue :ap.getAssociatedUEList()) {
 				        		ue.updateThroughput(time - ap.getTxStartTime());
-				        		
 				        	}
 				        	
 				        	ap.setRemaining(time, ap.getTxDuration() - time + ap.getTxStartTime());
@@ -218,12 +219,12 @@ public class MainClass {
 			}
 			//ap.getAvgThroughput();
 			//System.out.println("Avg thruput: " + bs.averageThroughput() + " avg satis: " + bs.averageSatis() + " wifi throughput: " + ap.getAvgThroughput());
-			//System.out.println(" wifi throughput: " + ap.getAvgThroughput());
+			System.out.println("id: " + ap.getId() + " wifi throughput: " + ap.getAvgThroughput());
 }
-		double a = btsThroughput();
-		double b = wifiThroughput();
-		
-		System.out.println("Avg thruput: " + a + " wifi throughput: " + b + " user satisfaction: " + btsSatisfaction() + " jain fairness: " + jainFairness(a, b));
+//		double a = btsThroughput();
+//		double b = wifiThroughput();
+//		
+//		System.out.println("Avg thruput: " + a + " wifi throughput: " + b + " user satisfaction: " + btsSatisfaction() + " jain fairness: " + jainFairness(a, b));
 		//System.out.println(" wifi throughput: " + b);
 		//------------- lte start ---------------
 		// = new Services();

@@ -59,6 +59,10 @@ public class Services {
 					j--;
 					continue;
 				}
+				if(loc.getX() == apLoc.getX() && loc.getY() == apLoc.getY()) {
+					j--;
+					continue;
+				}
 				ue = new UserEquipment(ap.getId() * 100 + j, loc);
 				ueList.add(ue);
 			}
