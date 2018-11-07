@@ -33,10 +33,6 @@ public class UserEquipment {
 			powerTx = 10 * Math.log10(ap.getTxPower());	// in dBm
 			powerRcvd = powerTx - pathLoss;	// in dBm
 			snr = powerRcvd - Params.NOISE; // in dBm 
-			//if(ap.getId() == 2)
-			//System.out.println("id: " + id + " pathloss: " + pathLoss + " pwrRec: " + powerRcvd + " SNR: " + snr);
-			
-			//System.out.println(distance+"***"+pathLoss+"--"+powerRcvd);
 			if( powerRcvd > maxPRcvd ) {
 				selectedAP = ap;
 				maxPRcvd = powerRcvd;
@@ -48,20 +44,11 @@ public class UserEquipment {
 	}
 	
 	public double getThroughput() {
-//		if(associatedAP.getId() == 2)
-//			System.out.println("id: " + id + " throughputMultiplier: " + throughputMultiplier + " maxSNR: " + maxSNR);
-		
 		return throughput;
 	}
 	
 	public void updateThroughput(long time) {
-//		if(associatedAP.getId() == 2 && (id == 9 || id == 10)) {
-//			System.out.println("id: " + id + " throughputMultiplier: " + throughputMultiplier + " maxSNR: " + maxSNR);
-//		}
 		throughput+=throughputMultiplier*time;
-//		if(associatedAP.getId() == 2 && (id == 9 || id == 10)) {
-//			System.out.println("id: " + id + " time: " + time + " throughput: " + throughput);
-//		}
 	}
 	
 	
