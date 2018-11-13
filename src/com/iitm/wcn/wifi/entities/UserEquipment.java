@@ -12,6 +12,9 @@ public class UserEquipment {
 	private double maxSNR = 0;
 	private double throughputMultiplier = Params.CH_BANDWIDTH * Params.SIFS / Math.pow(10,6);
 	private double throughput=0;
+	private double satisfaction;
+	private double dataReq = Params.DATA_REQUEST;
+	private double dataRec = 0;
 	
 	/* Constructor */
 	public UserEquipment(int id, Location loc) {
@@ -55,11 +58,12 @@ public class UserEquipment {
 	}
 	
 	public void updateThroughput(long time) {
-		if(associatedAP.getId() == 9)// && (id == 900 || id == 210))
-			System.out.println("id: " + id + " throughputMultiplier: " + throughputMultiplier + " maxSNR: " + maxSNR);
+//		if(associatedAP.getId() == 9)// && (id == 900 || id == 210))
+//			System.out.println("id: " + id + " throughputMultiplier: " + throughputMultiplier + " maxSNR: " + maxSNR);
 		throughput+=throughputMultiplier*time;
-		if(associatedAP.getId() == 9)// && (id == 900 || id == 210))
-			System.out.println("id: " + id + " time: " + time + " throughput: " + throughput);
+		setDataRec(throughputMultiplier*time);
+//		if(associatedAP.getId() == 9)// && (id == 900 || id == 210))
+//			System.out.println("id: " + id + " time: " + time + " throughput: " + throughput);
 	}
 	
 	
@@ -74,6 +78,22 @@ public class UserEquipment {
 	public void associateAP(AccessPoint ap) {
 		this.associatedAP = ap;
 		//this.ch = ap.getChannel();
+	}
+	
+	public double getDataRec() {
+		return dataRec;
+	}
+
+	public void setDataRec(double dataRec) {
+		this.dataRec = this.dataRec + dataRec;
+	}
+
+	public double getSatisfaction() {
+		return satisfaction;
+	}
+
+	public void setSatisfaction() {
+		this.satisfaction = dataRec/dataReq;
 	}
 
 	public void requestData() {

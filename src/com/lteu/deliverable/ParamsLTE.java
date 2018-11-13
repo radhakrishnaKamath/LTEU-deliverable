@@ -54,11 +54,13 @@ public class ParamsLTE {
 	
 	public static int SYMBOLS = 7; //depends on cyclic prefix
 	
-	public static int RE = SUBCARRIERS*SYMBOLS; //RE in 1 RB
+	public static int RE = SUBCARRIERS * SYMBOLS; //RE in 1 RB
 	
 	public static int RB = 200; //in one subframe
 	
 	public static int SUBFRAME_DUR = 1; //in millisec
 	
+	public static int DUTY_CYCLE = 20; //in millisec
 	
+	public static int DUTY_CYCLE_SPLIT = 10; //in percentage 10% smallest 
 }

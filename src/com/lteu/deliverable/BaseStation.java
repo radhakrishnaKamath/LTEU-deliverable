@@ -23,6 +23,8 @@ public class BaseStation {
 	int state, action, minAction, nextState;
 	Random rand = new Random();
     
+	double targetSatis, targetFairness;
+	
     public void initLTEU() {
     	for(int i=0;i<6;i++) {
 			for(int j=0; j<4; j++) {
@@ -35,7 +37,9 @@ public class BaseStation {
 		gamma = 0.9;
 		minAction = 0;
 		cLAA = 0;
-		cTar = 30 * 1024;
+		cTar = 30 * 1024 * 1024;
+		targetSatis = 70;
+		targetFairness = 0.5;
     }
     
   public int LTEUTimeSlot () {
@@ -49,10 +53,18 @@ public class BaseStation {
 	}
 	
     public double calculateCost(){
-		return Math.abs(cTar-cLAA);
+    	
+		return (Math.abs(cTar-cLAA) + accessPoint.cost() + Math.abs(targetSatis - averageSatis()) + accessPoint.satisfaction() 
+								   + Math.abs(targetFairness - jainFairness(averageThroughput(), accessPoint.getAvgThroughput())))/5;
 	}
     
-    public void initCLAA() {
+    
+    double jainFairness(double a, double b) {
+		return Math.pow(a+b,2)/(2*(a*a + b*b));
+	}
+    
+
+	public void initCLAA() {
     	this.cLAA = 0;
     }
     

@@ -21,6 +21,7 @@ public class AccessPoint {
 	private boolean backoffStatus;
 	private long txDuration;
 	private boolean difsWaited;
+	private double targetThr, achievedThr, targetSatis;
 	
 	public int getId() {
 		return id;
@@ -71,6 +72,21 @@ public class AccessPoint {
 		this.loc = loc;
 	}
 
+	public double cost() {
+		return Math.abs(targetThr - achievedThr);
+	}
+	
+	public double satisfaction() {	
+		return Math.abs(targetSatis - averageSatis());
+	}
+	
+	public double averageSatis(){
+        double avgsatis = 0;
+        for(int i=0; i<associatedUEList.size(); i++){
+        	avgsatis = avgsatis + associatedUEList.get(i).getSatisfaction();
+        }
+        return avgsatis/associatedUEList.size();
+    }
 	
 	public AccessPoint(int id, Location loc, long txStartTime, int txDuration, long seed) {
 		associatedUEList = new ArrayList<UserEquipment>();
@@ -204,4 +220,5 @@ public class AccessPoint {
 		}
 		return thrput/this.associatedUEList.size();
 	}
+
 }

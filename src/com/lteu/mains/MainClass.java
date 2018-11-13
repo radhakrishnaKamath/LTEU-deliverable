@@ -59,7 +59,7 @@ public class MainClass {
 			double cost;
 			boolean initFlag = true;
 			for(long time = 0; time < Params.SIM_DURATION;) {
-				for(int slotPercent=1; slotPercent<=5; slotPercent++, time +=Params.SIFS) {
+				for(int slotPercent=1; slotPercent<=ParamsLTE.DUTY_CYCLE_SPLIT; slotPercent++, time +=Params.SIFS) { //0.2*ParamsLTE.DUTY_CYCLE 
 					if(slotPercent <= timeLTEU) {
 						int userDataRateReq[] = new int [] {0, 0, 0};
 						int totalData = 0;
@@ -71,8 +71,7 @@ public class MainClass {
 						ap.setChannelAsBusy();
 						int timeLTE = Params.SIFS * ParamsLTE.SUBFRAME_DUR;
 						int totalRB = ParamsLTE.RB * timeLTE;
-						if(ap.getTxStartTime() == 
-								time) {
+						if(ap.getTxStartTime() == time) {
 							ap.setTxStartTime(time + ap.getBackoffTime());
 							ap.putInBackoffMode();
 			                ap.updateBackoffTime();
@@ -131,17 +130,14 @@ public class MainClass {
 							if(ue.getDataRequest() == ParamsLTE.DATARATE[2]) {
 								double data = ParamsLTE.DATARATE[2]*totalDataAvail / totalReq;
 								ue.setDataRec(data);
-	  							bs.updateCLAA(totalData / (5 * Params.SIFS)); //(8 * 1024 * 1024));
 							} else if(ue.getDataRequest() == ParamsLTE.DATARATE[1]) {
 								double data = ParamsLTE.DATARATE[1]*totalDataAvail / totalReq;
 								ue.setDataRec(data);
-	  							bs.updateCLAA(totalData / (5 * Params.SIFS)); //(8 * 1024 * 1024));
 							} else {
 								double data = ParamsLTE.DATARATE[0]*totalDataAvail / totalReq;
 								ue.setDataRec(data);
-								bs.updateCLAA(totalData / (5 * Params.SIFS)); //(8 * 1024 * 1024));
-								
 							}
+							bs.updateCLAA(totalData / (5*Params.SIFS)); //(8 * 1024 * 1024)); ParamsLTE.DUTY_CYCLE
 							ue.setSatisfaction();							
 						}
 						
@@ -193,7 +189,7 @@ public class MainClass {
 						/* set the channel free after the data transmission is completed */
 				        if( ap.getTxStartTime() + ap.getTxDuration() + Params.SIFS == time) {
 				        	//System.out.println("AP " + ap.getId() + " is completed at " + time);
-				        	System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
+				        	//System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
 				        	for(UserEquipment ue :ap.getAssociatedUEList()) {
 				        		ue.updateThroughput(ap.getTxDuration());
 				        	}
@@ -203,7 +199,7 @@ public class MainClass {
 				    		// services.printAPSchedule(apList);
 				        }
 				        if(slotPercent==5 && ap.getTxStartTime() + ap.getTxDuration() + Params.SIFS < time) {
-			        		System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
+			        	//	System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
 				        	//System.out.println("AP " + ap.getId() + " is completed at " + time);
 				        	for(UserEquipment ue :ap.getAssociatedUEList()) {
 				        		ue.updateThroughput(time - ap.getTxStartTime());
@@ -219,12 +215,12 @@ public class MainClass {
 			}
 			//ap.getAvgThroughput();
 			//System.out.println("Avg thruput: " + bs.averageThroughput() + " avg satis: " + bs.averageSatis() + " wifi throughput: " + ap.getAvgThroughput());
-			System.out.println("id: " + ap.getId() + " wifi throughput: " + ap.getAvgThroughput());
+			//System.out.println("id: " + ap.getId() + " wifi throughput: " + ap.getAvgThroughput());
 }
-//		double a = btsThroughput();
-//		double b = wifiThroughput();
-//		
-//		System.out.println("Avg thruput: " + a + " wifi throughput: " + b + " user satisfaction: " + btsSatisfaction() + " jain fairness: " + jainFairness(a, b));
+		double a = btsThroughput();
+		double b = wifiThroughput();
+		
+		System.out.println("Avg thruput: " + a + " wifi throughput: " + b + " user satisfaction: " + btsSatisfaction() + " jain fairness: " + jainFairness(a, b));
 		//System.out.println(" wifi throughput: " + b);
 		//------------- lte start ---------------
 		// = new Services();
@@ -286,6 +282,7 @@ public class MainClass {
 		double thrput = 0;
 		int count=0;
 		for(BaseStation bs:bts) {
+			//System.out.println("bs id: " + bs.getId() + " avg thrput: " + bs.averageThroughput());
 			if(bs.averageThroughput()!=0) {
 				thrput = thrput + bs.averageThroughput();
 				count++;
