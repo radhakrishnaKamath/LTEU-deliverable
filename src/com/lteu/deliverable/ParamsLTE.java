@@ -62,5 +62,5 @@ public class ParamsLTE {
 	
 	public static int DUTY_CYCLE = 20; //in millisec
 	
-	public static int DUTY_CYCLE_SPLIT = 10; //in percentage 10% smallest 
+	public static int DUTY_CYCLE_SPLIT = 20; //in percentage 10% smallest 
 }

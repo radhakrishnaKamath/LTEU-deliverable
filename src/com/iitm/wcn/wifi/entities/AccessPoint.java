@@ -21,7 +21,7 @@ public class AccessPoint {
 	private boolean backoffStatus;
 	private long txDuration;
 	private boolean difsWaited;
-	private double targetThr, achievedThr, targetSatis;
+	private double targetThr = Params.TARGET_DATA_REQ, achievedThr;
 	
 	public int getId() {
 		return id;
@@ -77,7 +77,7 @@ public class AccessPoint {
 	}
 	
 	public double satisfaction() {	
-		return Math.abs(targetSatis - averageSatis());
+		return averageSatis();
 	}
 	
 	public double averageSatis(){

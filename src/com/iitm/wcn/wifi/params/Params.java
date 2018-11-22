@@ -27,5 +27,5 @@ public class Params {
 	public static int CW_MAX = 1023;			// contention window size
 	public static int MAX_TX_DURATON = 300;		// no of slots
 	
-	public static int DATA_REQUEST = 128;		// data request
+	public static double TARGET_DATA_REQ = 1.529164;		// data request
 }

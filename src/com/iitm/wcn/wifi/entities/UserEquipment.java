@@ -13,7 +13,7 @@ public class UserEquipment {
 	private double throughputMultiplier = Params.CH_BANDWIDTH * Params.SIFS / Math.pow(10,6);
 	private double throughput=0;
 	private double satisfaction;
-	private double dataReq = Params.DATA_REQUEST;
+	private double dataReq = Params.TARGET_DATA_REQ;
 	private double dataRec = 0;
 	
 	/* Constructor */

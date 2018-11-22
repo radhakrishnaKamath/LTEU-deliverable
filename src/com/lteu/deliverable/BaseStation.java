@@ -18,7 +18,7 @@ public class BaseStation {
     
     /* LTEU */
     
-    double qTable [][] = new double [6][4];
+    double qTable [][] = new double [6][ParamsLTE.DUTY_CYCLE_SPLIT-1]; //ParamsLTE.DUTY_CYCLE_SPLIT-1 because we ignore the last action 
 	double cTar, r, epsilon, alpha, gamma, ci, cLAA, cost;
 	int state, action, minAction, nextState;
 	Random rand = new Random();
@@ -27,7 +27,7 @@ public class BaseStation {
 	
     public void initLTEU() {
     	for(int i=0;i<6;i++) {
-			for(int j=0; j<4; j++) {
+			for(int j=0; j<ParamsLTE.DUTY_CYCLE_SPLIT-1; j++) {
 				qTable[i][j] = 0;
 			}
 		}
@@ -54,8 +54,8 @@ public class BaseStation {
 	
     public double calculateCost(){
     	
-		return (Math.abs(cTar-cLAA) + accessPoint.cost() + Math.abs(targetSatis - averageSatis()) + accessPoint.satisfaction() 
-								   + Math.abs(targetFairness - jainFairness(averageThroughput(), accessPoint.getAvgThroughput())))/5;
+		return (jainFairness(averageThroughput(), accessPoint.getAvgThroughput()) * accessPoint.satisfaction() * averageSatis())/
+				(Math.abs(cTar-cLAA) * accessPoint.cost());
 	}
     
     
