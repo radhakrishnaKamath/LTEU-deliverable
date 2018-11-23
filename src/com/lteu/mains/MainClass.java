@@ -28,14 +28,12 @@ public class MainClass {
 		ServicesLTE servicesLTE  = new ServicesLTE();
 		/* Initialization of WiFi simulation environment */
 		apList = Services.createAPsNew();
-		System.out.println("aplist size " + apList.size());
 		ueList = Services.createUsers(apList);
-		System.out.println("uelist size " + ueList.size());
 		/* Association of users to APs */
 		services.associateUsersToAPs(ueList, apList);
-		for(AccessPoint ap: apList) {
-			System.out.println(ap.getAssociatedUEList().size());
-		}
+//		for(AccessPoint ap: apList) {
+//			System.out.println(ap.getAssociatedUEList().size());
+//		}
 		/* Initialization of LTE simulation environment */
 		bts = servicesLTE.CreateBS(apList);
 		ue = servicesLTE.CreateUE(bts, apList);
@@ -54,14 +52,20 @@ public class MainClass {
 		/* simulation */
 		/* simulation runs in steps of SIFS, because SIFS is the smallest unit */
  		
+		
+		
+		
+		
 		for(BaseStation bs:bts) {
 			List<AccessPoint> ap = bs.getAccessPoint();
 			bs.initLTEU();
 			int timeLTEU = bs.LTEUTimeSlot();
-			double cost;
+			double cost;   
 			boolean initFlag = true;
 			for(long time = 0; time < Params.SIM_DURATION;) {
-				for(int slotPercent=1; slotPercent<=ParamsLTE.DUTY_CYCLE_SPLIT; slotPercent++, time +=Params.SIFS) { //0.2*ParamsLTE.DUTY_CYCLE 
+				for(int slotPercent=1; slotPercent<=ParamsLTE.DUTY_CYCLE_SPLIT; slotPercent++, time +=Params.SIFS)
+				{
+					//0.2*ParamsLTE.DUTY_CYCLE 
 					if(slotPercent <= timeLTEU) {
 						int userDataRateReq[] = new int [] {0, 0, 0};
 						int totalData = 0;

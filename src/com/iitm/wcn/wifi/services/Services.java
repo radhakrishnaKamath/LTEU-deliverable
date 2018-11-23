@@ -43,7 +43,7 @@ public class Services {
 		List<AccessPoint> apList = new ArrayList<AccessPoint>();
 		AccessPoint ap;
 		Location apLoc;
-		
+		int id;
 		Random randX = new Random(Params.AP_SEED);
 		Random randY = new Random(Params.AP_SEED + 1);
 		Random randTime = new Random(Params.TIME_SEED + 1);
@@ -58,15 +58,14 @@ public class Services {
         			txStartTime = (long)(randTime.nextDouble() * (Params.SIM_DURATION / Params.SIFS)) * Params.SIFS;
         			/* generate a random duration for data transfer */
         			txDuration = Math.min((int)(Params.SIM_DURATION - txStartTime), (int)(randTime.nextDouble() * Params.MAX_TX_DURATON / Params.SIFS) * Params.SIFS);
-       
+        			id = (5*i*Params.NO_OF_AP)+j+k;
         			int x = i*100 + randX.nextInt(100);
-                    int y = j*100 + randY.nextInt(100);
+                    int y = j*100/Params.NO_OF_AP + randY.nextInt(100);
                     apLoc = new Location(x,y);
                     
                     //System.out.println("loc: x: " + bsLoc.getX() + " y: " + bsLoc.getY());
                     ArrayList<UserEquipmentLTE> ue = new ArrayList<UserEquipmentLTE>();
                     ap = new AccessPoint((5*i*Params.NO_OF_AP)+j+k, apLoc, txStartTime, txDuration, seed.nextLong());
-                    //System.out.println("Ap " + ap.getId() + " created");
                     apList.add(ap);
     			}
     		}
@@ -86,6 +85,7 @@ public class Services {
 			
 		for( AccessPoint ap: apList ) {
 			apLoc = ap.getLoc();
+			System.out.println("AP " + ap.getId() + " AP loc X " + ap.getLoc().getX() + " AP loc Y " + ap.getLoc().getY());
 			for( int j = 0; j < Params.USERS_PER_AP; ++j) {
 				theta = (randTheta.nextInt(360)) * Math.PI / 180;
 				r = randR.nextInt(Params.AP_RANGE);
@@ -93,6 +93,7 @@ public class Services {
 				 * y = r * sin(theta)
 				 */
 				loc = new Location( apLoc.getX() + (int)Math.floor(r * Math.cos(theta)), apLoc.getY() + (int)Math.floor(r * Math.sin(theta)));
+				
 				if( loc.getX() < 0 || loc.getX() > Params.AREA || loc.getY() < 0  || loc.getY() > Params.AREA) {
 					j--;
 					continue;
@@ -102,7 +103,6 @@ public class Services {
 					continue;
 				}
 				ue = new UserEquipment(ap.getId() * 100 + j, loc);
-				System.out.println("APuserequip " + ue.getId() + " created");
 				ueList.add(ue);
 			}
 		}
