@@ -111,7 +111,7 @@ public class UserEquipmentLTE {
     		ArrayList<Double> signalStrength, 
     		List<BaseStationDistance> nearestBaseStation, 
     		BaseStation associatedBTS,
-    		AccessPoint accessPoint) {
+    		List<AccessPoint> accessPoint) {
         super();
         this.id = id;
         this.loc = loc;
@@ -156,18 +156,25 @@ public class UserEquipmentLTE {
     	return 10 + 50*Math.log10(dist);
     }
     
-    public void AddSignalStrengthNew(AccessPoint accessPoint){
+    public void AddSignalStrengthNew(List<AccessPoint> accessPoint){
+    	int apUserCount = 0;
     	List<Double> distanceAPUsers = new ArrayList<Double>();
-    	int apUserCount = accessPoint.getAssociatedUEList().size();
+    	for(AccessPoint AP : accessPoint) {
+    		apUserCount = apUserCount + AP.getAssociatedUEList().size();
+    	}
     	
     	double powerRecBTS = ConvertWattTodBm(ConvertdBmToWatt(ParamsLTE.TX_POWER)/100) - pathLoss(nearestBaseStation.get(0).getDist());
-    	double powerRecAP = ConvertWattTodBm(ConvertdBmToWatt(Params.TX_POWER)/100) - pathLoss(this.getLoc().distanceTo(accessPoint.getLoc()));
+    	double powerRecAP = ConvertWattTodBm(ConvertdBmToWatt(Params.TX_POWER)/100);
+    	for(AccessPoint AP : accessPoint) {
+    		powerRecAP = powerRecAP - pathLoss(this.getLoc().distanceTo(AP.getLoc()));
+    	}
     	double[] powerRecArr = new double[apUserCount];
-    	
+    	for(AccessPoint AP : accessPoint) {
+	    	for(UserEquipment ueAP: AP.getAssociatedUEList()){
+	    		distanceAPUsers.add(this.getLoc().distanceTo(ueAP.getLoc()));
+	        }
+    	}
     	int i=0;
-    	for(UserEquipment ueAP: accessPoint.getAssociatedUEList()){
-    		distanceAPUsers.add(this.getLoc().distanceTo(ueAP.getLoc()));
-        }
 		Collections.sort(distanceAPUsers);
 		for(Double dist: distanceAPUsers) {
           double powerRec = ConvertWattTodBm(ConvertdBmToWatt(Params.TX_POWER)/100) - pathLoss(dist);

@@ -88,7 +88,12 @@ public class ServicesLTE{
                 Location bsLoc = new Location(x,y);
                 //System.out.println("loc: x: " + bsLoc.getX() + " y: " + bsLoc.getY());
                 ArrayList<UserEquipmentLTE> ue = new ArrayList<UserEquipmentLTE>();
-                BaseStation bs = new BaseStation((5*i)+j, bsLoc, ParamsLTE.TX_POWER, ue, apList.get(5*i+j));
+                List<AccessPoint> aps = new ArrayList<AccessPoint>();
+                for(int k=0; k<Params.NO_OF_AP; k++) {
+                	aps.add(apList.get((5*i*Params.NO_OF_AP)+j+k));
+                }
+                BaseStation bs = new BaseStation((5*i)+j, bsLoc, ParamsLTE.TX_POWER, ue, aps);
+                System.out.println("Bs " + bs.getId() + " created");
                 bsList.add(bs);
     		}
         }
@@ -112,6 +117,7 @@ public class ServicesLTE{
                 ArrayList<Double> signal = new ArrayList<Double>();
 
                 UserEquipmentLTE userequip = new UserEquipmentLTE(i, ueLoc, 0.0, signal, nearBaseStations);
+                System.out.println("LTEuserequip " + userequip.getId() + " created");
                 ueList.add(userequip);
             }
         }
@@ -126,7 +132,7 @@ public class ServicesLTE{
 		
     	for(int i=0; i<ParamsLTE.NUM_USERS; i++){
     		BaseStation bs = bsList.get(i%ParamsLTE.NUM_BASE_STATIONS);
-    		AccessPoint accessPoint = apList.get(i%Params.NUM_APS);
+    		List<AccessPoint> accessPoint = bs.getAccessPoint();
     		Location bsLoc = bs.getLocation();
     		theta = (randTheta.nextInt(360)) * Math.PI / 180;
 			r = randR.nextInt(50);

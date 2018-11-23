@@ -27,13 +27,15 @@ public class MainClass {
 		Services services = new Services();
 		ServicesLTE servicesLTE  = new ServicesLTE();
 		/* Initialization of WiFi simulation environment */
-		apList = services.createAPs();
-		ueList = services.createUsers(apList);
+		apList = Services.createAPsNew();
+		System.out.println("aplist size " + apList.size());
+		ueList = Services.createUsers(apList);
+		System.out.println("uelist size " + ueList.size());
 		/* Association of users to APs */
 		services.associateUsersToAPs(ueList, apList);
-//		for(AccessPoint ap: apList) {
-//			System.out.println(ap.getAssociatedUEList().size());
-//		}
+		for(AccessPoint ap: apList) {
+			System.out.println(ap.getAssociatedUEList().size());
+		}
 		/* Initialization of LTE simulation environment */
 		bts = servicesLTE.CreateBS(apList);
 		ue = servicesLTE.CreateUE(bts, apList);
@@ -53,7 +55,7 @@ public class MainClass {
 		/* simulation runs in steps of SIFS, because SIFS is the smallest unit */
  		
 		for(BaseStation bs:bts) {
-			AccessPoint ap = bs.getAccessPoint();
+			List<AccessPoint> ap = bs.getAccessPoint();
 			bs.initLTEU();
 			int timeLTEU = bs.LTEUTimeSlot();
 			double cost;
@@ -68,25 +70,29 @@ public class MainClass {
 							bs.initCLAA();
 							initFlag = false;
 						}
-						ap.setChannelAsBusy();
+						for(AccessPoint accpoint : ap) {
+							accpoint.setChannelAsBusy();
+						}
 						int timeLTE = Params.SIFS * ParamsLTE.SUBFRAME_DUR;
 						int totalRB = ParamsLTE.RB * timeLTE;
-						if(ap.getTxStartTime() == time) {
-							ap.setTxStartTime(time + ap.getBackoffTime());
-							ap.putInBackoffMode();
-			                ap.updateBackoffTime();
-						} else if(ap.isInBackoffMode()) {
-							/* if the channel is busy then pause(increment) the backoff timer */
-							if(ap.isChannelBusy()) {
-								ap.setTxStartTime(ap.getTxStartTime() + Params.SIFS);
-								/* reset the channel idletimer */
-								ap.getChannel().resetIdleTimer();
-							}
-							else {
-								/* if the channel is idle for DIFS then resume(stop incrementing) the backoff timer */
-								ap.getChannel().updateIdleTimer(Params.SIFS);
-								if( ap.getChannel().getIdleTimer() < Params.DIFS ) {
-									ap.setTxStartTime( ap.getTxStartTime() + Params.SIFS );
+						for(AccessPoint accpoint : ap) {
+							if(accpoint.getTxStartTime() == time) {
+								accpoint.setTxStartTime(time + accpoint.getBackoffTime());
+								accpoint.putInBackoffMode();
+				                accpoint.updateBackoffTime();
+							} else if(accpoint.isInBackoffMode()) {
+								/* if the channel is busy then pause(increment) the backoff timer */
+								if(accpoint.isChannelBusy()) {
+									accpoint.setTxStartTime(accpoint.getTxStartTime() + Params.SIFS);
+									/* reset the channel idletimer */
+									accpoint.getChannel().resetIdleTimer();
+								}
+								else {
+									/* if the channel is idle for DIFS then resume(stop incrementing) the backoff timer */
+									accpoint.getChannel().updateIdleTimer(Params.SIFS);
+									if( accpoint.getChannel().getIdleTimer() < Params.DIFS ) {
+										accpoint.setTxStartTime( accpoint.getTxStartTime() + Params.SIFS );
+									}
 								}
 							}
 						}
@@ -153,74 +159,78 @@ public class MainClass {
 						}
 					} else {
 						initFlag = true;
-						ap.setChannelAsFree();
-						/* if this AP is scheduled to start at this time */
-						if(ap.getTxStartTime() == time) {
-							// System.out.println(ap.getId() + " is scheduled at " + time);
-							/* check whether the channel is busy */
-							if(ap.waitedDIFS() == false) {
-								/* if channel not busy wait for DIFS time */
-								ap.setTxStartTime( time + Params.DIFS);
-								ap.waitForDIFS();						
-							} else {
-								/* lock the channel */
-								//System.out.println("AP " + ap.getId() + " started at time " + time);
-								ap.setChannelAsBusy();
-								/* send data */
-				            }
-				        }
-						/* otherwise check whether the station is in backoff mode */
-						else if(ap.isInBackoffMode()) {
-							/* if the channel is busy then pause(increment) the backoff timer */
-							if(ap.isChannelBusy()) {
-								ap.setTxStartTime(ap.getTxStartTime() + Params.SIFS);
-								/* reset the channel idletimer */
-								ap.getChannel().resetIdleTimer();
-							} else {
-								/* if the channel is idle for DIFS then resume(stop incrementing) the backoff timer */
-						   		ap.getChannel().updateIdleTimer(Params.SIFS);
-								if( ap.getChannel().getIdleTimer() < Params.DIFS ) {
-									ap.setTxStartTime( ap.getTxStartTime() + Params.SIFS );
+						for(AccessPoint accpoint : ap) {
+							accpoint.setChannelAsFree();
+							/* if this accpoint is scheduled to start at this time */
+							if(accpoint.getTxStartTime() == time) {
+								// System.out.println(ap.getId() + " is scheduled at " + time);
+								/* check whether the channel is busy */
+								if(accpoint.waitedDIFS() == false) {
+									/* if channel not busy wait for DIFS time */
+									accpoint.setTxStartTime( time + Params.DIFS);
+									accpoint.waitForDIFS();						
+								} else {
+									/* lock the channel */
+									//System.out.println("AP " + ap.getId() + " started at time " + time);
+									accpoint.setChannelAsBusy();
+									/* send data */
+					            }
+					        }
+							/* otherwise check whether the station is in backoff mode */
+							else if(accpoint.isInBackoffMode()) {
+								/* if the channel is busy then pause(increment) the backoff timer */
+								if(accpoint.isChannelBusy()) {
+									accpoint.setTxStartTime(accpoint.getTxStartTime() + Params.SIFS);
+									/* reset the channel idletimer */
+									accpoint.getChannel().resetIdleTimer();
+								} else {
+									/* if the channel is idle for DIFS then resume(stop incrementing) the backoff timer */
+							   		accpoint.getChannel().updateIdleTimer(Params.SIFS);
+									if( accpoint.getChannel().getIdleTimer() < Params.DIFS ) {
+										accpoint.setTxStartTime( accpoint.getTxStartTime() + Params.SIFS );
+									}
 								}
 							}
-						}
-						
-						
-						/* set the channel free after the data transmission is completed */
-				        if( ap.getTxStartTime() + ap.getTxDuration() + Params.SIFS == time) {
-				        	//System.out.println("AP " + ap.getId() + " is completed at " + time);
-				        	//System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
-				        	for(UserEquipment ue :ap.getAssociatedUEList()) {
-				        		ue.updateThroughput(ap.getTxDuration());
-				        	}
-				        	ap.setAsCompleted(time);
-				        	ap.setChannelAsFree();
-				        	// new schedule
-				    		// services.printAPSchedule(apList);
-				        }
-				        if(slotPercent==5 && ap.getTxStartTime() + ap.getTxDuration() + Params.SIFS < time) {
-			        	//	System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
-				        	//System.out.println("AP " + ap.getId() + " is completed at " + time);
-				        	for(UserEquipment ue :ap.getAssociatedUEList()) {
-				        		ue.updateThroughput(time - ap.getTxStartTime());
-				        	}
-				        	
-				        	ap.setRemaining(time, ap.getTxDuration() - time + ap.getTxStartTime());
-				        	ap.setChannelAsFree();
-				        	// new schedule
-				    		// services.printAPSchedule(apList);
-				        }
+							
+							
+							/* set the channel free after the data transmission is completed */
+					        if( accpoint.getTxStartTime() + accpoint.getTxDuration() + Params.SIFS == time) {
+					        	//System.out.println("accpoint " + accpoint.getId() + " is completed at " + time);
+					        	//System.out.println("accpoint: " + accpoint.getId() + " will call ue.updateThroughput");
+					        	for(UserEquipment ue :accpoint.getAssociatedUEList()) {
+					        		ue.updateThroughput(accpoint.getTxDuration());
+					        	}
+					        	accpoint.setAsCompleted(time);
+					        	accpoint.setChannelAsFree();
+					        	// new schedule
+					    		// services.printAPSchedule(apList);
+					        }
+					        if(slotPercent==5 && accpoint.getTxStartTime() + accpoint.getTxDuration() + Params.SIFS < time) {
+				        	//	System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
+					        	//System.out.println("AP " + ap.getId() + " is completed at " + time);
+					        	for(UserEquipment ue :accpoint.getAssociatedUEList()) {
+					        		ue.updateThroughput(time - accpoint.getTxStartTime());
+					        	}
+					        	
+					        	accpoint.setRemaining(time, accpoint.getTxDuration() - time + accpoint.getTxStartTime());
+					        	accpoint.setChannelAsFree();
+					        	// new schedule
+					    		// services.printAPSchedule(apList);
+					        }
+						}    
 					}
 				}
 			}
 			//ap.getAvgThroughput();
-			//System.out.println("Avg thruput: " + bs.averageThroughput() + " avg satis: " + bs.averageSatis() + " wifi throughput: " + ap.getAvgThroughput());
+			//System.out.println("Avg thruput: " + bs.averageThroughput() + " avg satis: " + bs.averageSatis() + 
+			//" wifi throughput: " + ap.getAvgThroughput());
 			//System.out.println("id: " + ap.getId() + " wifi throughput: " + ap.getAvgThroughput());
 }
 		double a = btsThroughput();
 		double b = wifiThroughput();
 		
-		System.out.println("Avg thruput: " + a + " wifi throughput: " + b + " user satisfaction: " + btsSatisfaction() + " jain fairness: " + jainFairness(a, b));
+		System.out.println("Avg thruput: " + a + " wifi throughput: " + b + " user satisfaction: " + btsSatisfaction() + 
+				" jain fairness: " + jainFairness(a, b));
 		//System.out.println(" wifi throughput: " + b);
 		//------------- lte start ---------------
 		// = new Services();

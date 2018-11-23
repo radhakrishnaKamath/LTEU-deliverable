@@ -60,7 +60,7 @@ public class ParamsLTE {
 	
 	public static int SUBFRAME_DUR = 1; //in millisec
 	
-	public static int DUTY_CYCLE = 20; //in millisec
+	public static int DUTY_CYCLE = 40; //in millisec
 	
-	public static int DUTY_CYCLE_SPLIT = 20; //in percentage 10% smallest 
+	public static int DUTY_CYCLE_SPLIT = 40; //in percentage 10% smallest 
 }

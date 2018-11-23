@@ -1,6 +1,7 @@
 package com.lteu.deliverable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import com.iitm.wcn.wifi.entities.AccessPoint;
@@ -14,7 +15,7 @@ public class BaseStation {
     private Location location;
     private double txPower;
     private ArrayList<UserEquipmentLTE> usersAssociated;
-    private AccessPoint accessPoint;
+    private List<AccessPoint> accessPoint;
     
     /* LTEU */
     
@@ -54,8 +55,8 @@ public class BaseStation {
 	
     public double calculateCost(){
     	
-		return (jainFairness(averageThroughput(), accessPoint.getAvgThroughput()) * accessPoint.satisfaction() * averageSatis())/
-				(Math.abs(cTar-cLAA) * accessPoint.cost());
+		return (jainFairness(averageThroughput(), accessPoint.get(0).getAvgThroughput()) * accessPoint.get(0).satisfaction() * averageSatis())/
+				(Math.abs(cTar-cLAA) * accessPoint.get(0).cost());
 	}
     
     
@@ -137,7 +138,7 @@ public class BaseStation {
         this.usersAssociated = usersAssociated;
     }
     
-    public BaseStation(int id, Location bsLoc, double txPower, ArrayList<UserEquipmentLTE> usersAssociated, AccessPoint accessPoint) {
+    public BaseStation(int id, Location bsLoc, double txPower, ArrayList<UserEquipmentLTE> usersAssociated, List<AccessPoint> accessPoint) {
         super();
         this.id = id;
         this.location = bsLoc;
@@ -190,11 +191,11 @@ public class BaseStation {
         this.usersAssociated.add(usersAssociated);
     }
     
-    public AccessPoint getAccessPoint() {
+    public List<AccessPoint> getAccessPoint() {
 		return accessPoint;
 	}
 
-	public void setAccessPoint(AccessPoint accessPoint) {
+	public void setAccessPoint(List<AccessPoint> accessPoint) {
 		this.accessPoint = accessPoint;
 	}
 

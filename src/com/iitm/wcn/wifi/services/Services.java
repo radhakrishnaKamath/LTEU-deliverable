@@ -8,6 +8,9 @@ import com.iitm.wcn.wifi.entities.AccessPoint;
 import com.iitm.wcn.wifi.entities.Location;
 import com.iitm.wcn.wifi.entities.UserEquipment;
 import com.iitm.wcn.wifi.params.Params;
+import com.lteu.deliverable.BaseStation;
+import com.lteu.deliverable.ParamsLTE;
+import com.lteu.deliverable.UserEquipmentLTE;
 
 public class Services {
 
@@ -34,6 +37,41 @@ public class Services {
 			apList.add(ap);
 		}
 		return apList;
+	}
+	
+	public static List<AccessPoint> createAPsNew() {
+		List<AccessPoint> apList = new ArrayList<AccessPoint>();
+		AccessPoint ap;
+		Location apLoc;
+		
+		Random randX = new Random(Params.AP_SEED);
+		Random randY = new Random(Params.AP_SEED + 1);
+		Random randTime = new Random(Params.TIME_SEED + 1);
+		Random randDur = new Random(Params.TIME_SEED + 2);
+		Random seed = new Random(Params.TIME_SEED + 3);
+		long txStartTime;
+		int txDuration;
+		for(int i=0; i<5; i++){
+    		for(int j=0; j<5*Params.NO_OF_AP; j+=Params.NO_OF_AP) {
+    			for(int k=0; k<Params.NO_OF_AP; k++) {
+    				/* generate a random starting time for this AP */
+        			txStartTime = (long)(randTime.nextDouble() * (Params.SIM_DURATION / Params.SIFS)) * Params.SIFS;
+        			/* generate a random duration for data transfer */
+        			txDuration = Math.min((int)(Params.SIM_DURATION - txStartTime), (int)(randTime.nextDouble() * Params.MAX_TX_DURATON / Params.SIFS) * Params.SIFS);
+       
+        			int x = i*100 + randX.nextInt(100);
+                    int y = j*100 + randY.nextInt(100);
+                    apLoc = new Location(x,y);
+                    
+                    //System.out.println("loc: x: " + bsLoc.getX() + " y: " + bsLoc.getY());
+                    ArrayList<UserEquipmentLTE> ue = new ArrayList<UserEquipmentLTE>();
+                    ap = new AccessPoint((5*i*Params.NO_OF_AP)+j+k, apLoc, txStartTime, txDuration, seed.nextLong());
+                    //System.out.println("Ap " + ap.getId() + " created");
+                    apList.add(ap);
+    			}
+    		}
+        }
+        return apList;
 	}
 
 	public static List<UserEquipment> createUsers(List<AccessPoint> apList) {
@@ -64,6 +102,7 @@ public class Services {
 					continue;
 				}
 				ue = new UserEquipment(ap.getId() * 100 + j, loc);
+				System.out.println("APuserequip " + ue.getId() + " created");
 				ueList.add(ue);
 			}
 		}

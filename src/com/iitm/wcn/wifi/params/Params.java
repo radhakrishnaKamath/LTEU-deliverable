@@ -8,7 +8,7 @@ public class Params {
 	public static int AREA = 500;				// units: side in meters, 500m x 500m area
 	public static int NUM_APS = 25; 			// one AP per 100m x 100m meter area
 
-	public static int USERS_PER_AP = 20; 		// 20 users per AP
+	public static int USERS_PER_AP = 10; 		// 20 users per AP
 
 	public static String USER_DISTRIBUTION = "Uniform";
 	public static String AP_DISRIBUTION = "Uniform";
@@ -28,4 +28,6 @@ public class Params {
 	public static int MAX_TX_DURATON = 300;		// no of slots
 	
 	public static double TARGET_DATA_REQ = 1.529164;		// data request
+	
+	public static int NO_OF_AP = 2;		// no of APs associated with the BTS
 }
