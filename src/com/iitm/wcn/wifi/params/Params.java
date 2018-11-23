@@ -29,5 +29,5 @@ public class Params {
 	
 	public static double TARGET_DATA_REQ = 1.529164;		// data request
 	
-	public static int NO_OF_AP = 3;		// no of APs associated with the BTS
+	public static int NO_OF_AP = 2;		// no of APs associated with the BTS
 }

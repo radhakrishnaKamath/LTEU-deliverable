@@ -63,10 +63,10 @@ public class MainClass {
 			double cost;   
 			boolean initFlag = true;
 			for(long time = 0; time < Params.SIM_DURATION;) {
-				for(int slotPercent=1; slotPercent<=ParamsLTE.DUTY_CYCLE_SPLIT; slotPercent++, time +=Params.SIFS)
+				for(int slotPercent=1; slotPercent<=ParamsLTE.DUTY_CYCLE_SPLIT*Params.NO_OF_AP; slotPercent+=Params.SIFS, time +=Params.SIFS)
 				{
 					//0.2*ParamsLTE.DUTY_CYCLE 
-					if(slotPercent <= timeLTEU) {
+					if(slotPercent <= timeLTEU*ParamsLTE.DUTY_CYCLE) {
 						int userDataRateReq[] = new int [] {0, 0, 0};
 						int totalData = 0;
 						
@@ -78,7 +78,7 @@ public class MainClass {
 							accpoint.setChannelAsBusy();
 						}
 						int timeLTE = Params.SIFS * ParamsLTE.SUBFRAME_DUR;
-						int totalRB = ParamsLTE.RB * timeLTE;
+						int totalRB = ParamsLTE.RB;
 						for(AccessPoint accpoint : ap) {
 							if(accpoint.getTxStartTime() == time) {
 								accpoint.setTxStartTime(time + accpoint.getBackoffTime());
@@ -100,66 +100,70 @@ public class MainClass {
 								}
 							}
 						}
-						
-						for(UserEquipmentLTE ue: bs.getUsersAssociated()) {
-							double sinr = 0.0;
-							for(int s=0;s<ParamsLTE.SINR_CQI.size()-1;s++) {
-								if(ParamsLTE.SINR_CQI.get(s) == ue.getSINR()) {
-									sinr = ParamsLTE.SINR_CQI.get(s);
-									break;
-								} else if(ParamsLTE.SINR_CQI.get(0) > ue.getSINR()) {
-									sinr = ParamsLTE.SINR_CQI.get(0);
-									break;
-								} else if (ParamsLTE.SINR_CQI.get(s) < ue.getSINR() && ParamsLTE.SINR_CQI.get(s+1) > ue.getSINR()) {
-									sinr = ParamsLTE.SINR_CQI.get(s);
-									break;
-								} else if(ParamsLTE.SINR_CQI.get(ParamsLTE.SINR_CQI.size()-1) > ue.getSINR()) {
-									sinr = ParamsLTE.SINR_CQI.get(ParamsLTE.SINR_CQI.size()-1);
-									break;
+						if(slotPercent % ParamsLTE.DUTY_CYCLE == 0) {
+							
+							for(UserEquipmentLTE ue: bs.getUsersAssociated()) {
+								double sinr = 0.0;
+								for(int s=0;s<ParamsLTE.SINR_CQI.size()-1;s++) {
+									if(ParamsLTE.SINR_CQI.get(s) == ue.getSINR()) {
+										sinr = ParamsLTE.SINR_CQI.get(s);
+										break;
+									} else if(ParamsLTE.SINR_CQI.get(0) > ue.getSINR()) {
+										sinr = ParamsLTE.SINR_CQI.get(0);
+										break;
+									} else if (ParamsLTE.SINR_CQI.get(s) < ue.getSINR() && ParamsLTE.SINR_CQI.get(s+1) > ue.getSINR()) {
+										sinr = ParamsLTE.SINR_CQI.get(s);
+										break;
+									} else if(ParamsLTE.SINR_CQI.get(ParamsLTE.SINR_CQI.size()-1) > ue.getSINR()) {
+										sinr = ParamsLTE.SINR_CQI.get(ParamsLTE.SINR_CQI.size()-1);
+										break;
+									}
+								}
+								totalData = ParamsLTE.CQI_MCS.get(ParamsLTE.SINR_CQI.indexOf(sinr)) * ParamsLTE.RE; 
+								
+								//change needed
+								if(ue.getDataRequest() == ParamsLTE.DATARATE[2]) {
+									userDataRateReq[2]++;
+								} else if(ue.getDataRequest() == ParamsLTE.DATARATE[1]) {
+									userDataRateReq[1]++;
+								} else {
+									userDataRateReq[0]++;
 								}
 							}
-							totalData = ParamsLTE.CQI_MCS.get(ParamsLTE.SINR_CQI.indexOf(sinr)) * ParamsLTE.RE; 
-							//change needed
-							if(ue.getDataRequest() == ParamsLTE.DATARATE[2]) {
-								userDataRateReq[2]++;
-							} else if(ue.getDataRequest() == ParamsLTE.DATARATE[1]) {
-								userDataRateReq[1]++;
-							} else {
-								userDataRateReq[0]++;
-							}
-						}
-						
-						int totalReq = ParamsLTE.DATARATE[0] * userDataRateReq[0] + 
-									ParamsLTE.DATARATE[1] * userDataRateReq[1] + 
-									ParamsLTE.DATARATE[2] * userDataRateReq[2];
-						
-						int totalDataAvail = totalData * totalRB / 1024;
-						
-						for(UserEquipmentLTE ue: bs.getUsersAssociated()) {
 							
-							if(ue.getDataRequest() == ParamsLTE.DATARATE[2]) {
-								double data = ParamsLTE.DATARATE[2]*totalDataAvail / totalReq;
-								ue.setDataRec(data);
-							} else if(ue.getDataRequest() == ParamsLTE.DATARATE[1]) {
-								double data = ParamsLTE.DATARATE[1]*totalDataAvail / totalReq;
-								ue.setDataRec(data);
-							} else {
-								double data = ParamsLTE.DATARATE[0]*totalDataAvail / totalReq;
-								ue.setDataRec(data);
-							}
-							bs.updateCLAA(totalData / (5*Params.SIFS)); //(8 * 1024 * 1024)); ParamsLTE.DUTY_CYCLE
-							ue.setSatisfaction();							
-						}
-						
-						if(slotPercent == timeLTEU) {
+							int totalReq = ParamsLTE.DATARATE[0] * userDataRateReq[0] + 
+										ParamsLTE.DATARATE[1] * userDataRateReq[1] + 
+										ParamsLTE.DATARATE[2] * userDataRateReq[2];
+							//zSystem.out.println("totalreq for a Bts " + totalReq);
+							int totalDataAvail = totalData * totalRB / 1024;
 							
-							cost = bs.calculateCost();
-							//System.out.println(bs.getCLAA(timeLTE * Params.SIFS));
-							bs.setNextState(bs.nextState());
-							bs.minAction();
-							bs.update(bs.getCurrState(), timeLTEU, cost);
-							bs.updateCurrState();
-							//System.out.println("id: " + bs.getId() + " cLAA: " + bs.getCLAA());
+							for(UserEquipmentLTE ue: bs.getUsersAssociated()) {
+								
+								if(ue.getDataRequest() == ParamsLTE.DATARATE[2]) {
+									double data = ParamsLTE.DATARATE[2]*totalDataAvail / totalReq;
+									ue.setDataRec(data);
+								} else if(ue.getDataRequest() == ParamsLTE.DATARATE[1]) {
+									double data = ParamsLTE.DATARATE[1]*totalDataAvail / totalReq;
+									ue.setDataRec(data);
+								} else {
+									double data = ParamsLTE.DATARATE[0]*totalDataAvail / totalReq;
+									ue.setDataRec(data);
+								}
+								bs.updateCLAA(totalData / (5*Params.SIFS)); //(8 * 1024 * 1024)); ParamsLTE.DUTY_CYCLE
+								ue.setSatisfaction();							
+							}
+							
+							if(slotPercent == timeLTEU*ParamsLTE.DUTY_CYCLE) {
+								cost = bs.calculateCost();
+								//System.out.println(bs.getCLAA(timeLTE * Params.SIFS));
+								bs.setNextState(bs.nextState());
+								bs.minAction();
+								bs.update(bs.getCurrState(), timeLTEU, cost);
+								bs.updateCurrState();
+								//System.out.println("id: " + bs.getId() + " cLAA: " + bs.getCLAA());
+							}	
+						} else {
+							System.out.println("LTE is not transmitting");
 						}
 					} else {
 						initFlag = true;

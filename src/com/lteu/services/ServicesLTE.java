@@ -93,7 +93,6 @@ public class ServicesLTE{
                 	aps.add(apList.get((5*i*Params.NO_OF_AP)+j+k));
                 }
                 BaseStation bs = new BaseStation((5*i)+j, bsLoc, ParamsLTE.TX_POWER, ue, aps);
-                System.out.println("Bs " + bs.getId() + " created");
                 bsList.add(bs);
     		}
         }
