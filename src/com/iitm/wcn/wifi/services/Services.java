@@ -58,6 +58,7 @@ public class Services {
         			txStartTime = (long)(randTime.nextDouble() * (Params.SIM_DURATION / Params.SIFS)) * Params.SIFS;
         			/* generate a random duration for data transfer */
         			txDuration = Math.min((int)(Params.SIM_DURATION - txStartTime), (int)(randTime.nextDouble() * Params.MAX_TX_DURATON / Params.SIFS) * Params.SIFS);
+        			txDuration = 10* txDuration;
         			id = (5*i*Params.NO_OF_AP)+j+k;
         			int x = i*100 + randX.nextInt(100);
                     int y = j*100/Params.NO_OF_AP + randY.nextInt(100);
@@ -85,7 +86,7 @@ public class Services {
 			
 		for( AccessPoint ap: apList ) {
 			apLoc = ap.getLoc();
-			System.out.println("AP " + ap.getId() + " AP loc X " + ap.getLoc().getX() + " AP loc Y " + ap.getLoc().getY());
+			//System.out.println("AP " + ap.getId() + " AP loc X " + ap.getLoc().getX() + " AP loc Y " + ap.getLoc().getY());
 			for( int j = 0; j < Params.USERS_PER_AP; ++j) {
 				theta = (randTheta.nextInt(360)) * Math.PI / 180;
 				r = randR.nextInt(Params.AP_RANGE);

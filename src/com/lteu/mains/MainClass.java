@@ -38,6 +38,12 @@ public class MainClass {
 		bts = servicesLTE.CreateBS(apList);
 		ue = servicesLTE.CreateUE(bts, apList);
 		
+		double scalingFactor = Params.NO_OF_AP/2;
+		
+		if(scalingFactor == 0) {
+			scalingFactor = 1;
+		}
+		
 		double avgSINR[] = new double[ParamsLTE.NUM_BASE_STATIONS];
 		//double avgUserAssoc[] = new double[ParamsLTE.NUM_BASE_STATIONS];
 		for(int j=0; j<ParamsLTE.TRIALS; j++){
@@ -63,10 +69,11 @@ public class MainClass {
 			double cost;   
 			boolean initFlag = true;
 			for(long time = 0; time < Params.SIM_DURATION;) {
-				for(int slotPercent=1; slotPercent<=ParamsLTE.DUTY_CYCLE_SPLIT*Params.NO_OF_AP; slotPercent+=Params.SIFS, time +=Params.SIFS)
+				for(int slotPercent=0; slotPercent<=ParamsLTE.DUTY_CYCLE_SPLIT*Params.NO_OF_AP; slotPercent+=Params.SIFS, time +=Params.SIFS)
 				{
 					//0.2*ParamsLTE.DUTY_CYCLE 
-					if(slotPercent <= timeLTEU*ParamsLTE.DUTY_CYCLE) {
+					
+					if(slotPercent <= timeLTEU*ParamsLTE.DUTY_CYCLE * scalingFactor) {
 						int userDataRateReq[] = new int [] {0, 0, 0};
 						int totalData = 0;
 						
@@ -100,7 +107,7 @@ public class MainClass {
 								}
 							}
 						}
-						if(slotPercent % ParamsLTE.DUTY_CYCLE == 0) {
+						if(slotPercent % ParamsLTE.DUTY_CYCLE == 0 && slotPercent !=0) {
 							
 							for(UserEquipmentLTE ue: bs.getUsersAssociated()) {
 								double sinr = 0.0;
@@ -149,7 +156,7 @@ public class MainClass {
 									double data = ParamsLTE.DATARATE[0]*totalDataAvail / totalReq;
 									ue.setDataRec(data);
 								}
-								bs.updateCLAA(totalData / (5*Params.SIFS)); //(8 * 1024 * 1024)); ParamsLTE.DUTY_CYCLE
+								bs.updateCLAA(totalData*totalRB/slotPercent); //(8 * 1024 * 1024)); ParamsLTE.DUTY_CYCLE
 								ue.setSatisfaction();							
 							}
 							
@@ -163,7 +170,7 @@ public class MainClass {
 								//System.out.println("id: " + bs.getId() + " cLAA: " + bs.getCLAA());
 							}	
 						} else {
-							System.out.println("LTE is not transmitting");
+							//System.out.println("LTE is not transmitting @ slotPercent: " + slotPercent);
 						}
 					} else {
 						initFlag = true;
@@ -213,7 +220,7 @@ public class MainClass {
 					        	// new schedule
 					    		// services.printAPSchedule(apList);
 					        }
-					        if(slotPercent==5 && accpoint.getTxStartTime() + accpoint.getTxDuration() + Params.SIFS < time) {
+					        if(slotPercent==ParamsLTE.DUTY_CYCLE_SPLIT && accpoint.getTxStartTime() + accpoint.getTxDuration() + Params.SIFS < time) {
 				        	//	System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
 					        	//System.out.println("AP " + ap.getId() + " is completed at " + time);
 					        	for(UserEquipment ue :accpoint.getAssociatedUEList()) {
@@ -225,16 +232,17 @@ public class MainClass {
 					        	// new schedule
 					    		// services.printAPSchedule(apList);
 					        }
-						}    
+						}
 					}
 				}
+				initFlag = true;
 			}
 			//ap.getAvgThroughput();
 			//System.out.println("Avg thruput: " + bs.averageThroughput() + " avg satis: " + bs.averageSatis() + 
 			//" wifi throughput: " + ap.getAvgThroughput());
 			//System.out.println("id: " + ap.getId() + " wifi throughput: " + ap.getAvgThroughput());
 }
-		double a = btsThroughput();
+		double a = btsThroughput()/1024;
 		double b = wifiThroughput();
 		
 		System.out.println("Avg thruput: " + a + " wifi throughput: " + b + " user satisfaction: " + btsSatisfaction() + 

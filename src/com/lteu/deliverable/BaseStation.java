@@ -43,7 +43,7 @@ public class BaseStation {
 		targetFairness = 0.5;
     }
     
-  public int LTEUTimeSlot () {
+    public int LTEUTimeSlot () {
 		r = rand.nextDouble();
 		if(r<epsilon) {
 			int action = rand.nextInt(4);
@@ -54,11 +54,15 @@ public class BaseStation {
 	}
 	
     public double calculateCost(){
-    	
-		return (jainFairness(averageThroughput(), accessPoint.get(0).getAvgThroughput()) * accessPoint.get(0).satisfaction() * averageSatis())/
-				(Math.abs(cTar-cLAA) * accessPoint.get(0).cost());
+    	double thrput = 0, satis = 0, cost = 0;
+    	for(AccessPoint ap: accessPoint) {
+    		thrput = thrput + ap.getAvgThroughput(); 
+    		satis = satis + ap.satisfaction(); 
+    		cost = cost + ap.cost();
+    	}
+		return (jainFairness(averageThroughput()/1024, (thrput/accessPoint.size())) * (satis/accessPoint.size()) * averageSatis())/
+				(Math.abs(cTar-cLAA) * (cost/accessPoint.size()));
 	}
-    
     
     double jainFairness(double a, double b) {
 		return Math.pow(a+b,2)/(2*(a*a + b*b));
@@ -74,15 +78,16 @@ public class BaseStation {
     }
 	
     public int nextState(){
-		if(cLAA < 1024) {
+    	double cL = cLAA/1024;
+		if(cL < 1024) {
 			return 0;
-		} else if(1024 <= cLAA && cLAA < 10240) {
+		} else if(1024 <= cL && cL < 10240) {
 			return 1;
-		} else if(10240 <= cLAA && cLAA < 20480) {
+		} else if(10240 <= cL && cL < 20480) {
 			return 2;
-		} else if(20480 <= cLAA && cLAA < 30720) {
+		} else if(20480 <= cL && cL < 30720) {
 			return 3;
-		} else if(30720 <= cLAA && cLAA < 40960) {
+		} else if(30720 <= cL && cL < 40960) {
 			return 4;
 		} else {
 			return 5;
@@ -93,9 +98,9 @@ public class BaseStation {
     	cLAA = cLAA + i;
     }
     
-    public void updateCTAR(int i) {
-    	cTar = cTar + i;
-    }
+//    public void updateCTAR(int i) {
+//    	cTar = cTar + i;
+//    }
     
     public double getCLAA() {
     	//System.out.println(cLAA);
