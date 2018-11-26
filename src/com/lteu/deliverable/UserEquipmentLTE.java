@@ -15,7 +15,8 @@ public class UserEquipmentLTE {
 
     private int id;
     private Location loc;
-    private double dataRequest;
+    private double dataRateRequest;
+    private double dataRequest = ParamsLTE.TARGET_DATA_REQ;
     private double dataRec;
     private List<BaseStationDistance> nearestBaseStation;
     private ArrayList<Double> signalStrength = new ArrayList<Double>();
@@ -48,11 +49,11 @@ public class UserEquipmentLTE {
     }
 
     public double getDataRequest() {
-        return dataRequest;
+        return dataRateRequest;
     }
 
     public void setDataRequest(double dataRequest) {
-        this.dataRequest = dataRequest;
+        this.dataRateRequest = dataRequest;
     }
 
     public ArrayList<Double> getSignalStrength() {
@@ -99,7 +100,7 @@ public class UserEquipmentLTE {
         super();
         this.id = id;
         this.loc = loc;
-        this.dataRequest = dataRequest;
+        this.dataRateRequest = dataRequest;
         this.signalStrength = signalStrength;
         this.nearestBaseStation = nearestBaseStation;
         AddSignalStrength();
@@ -115,7 +116,7 @@ public class UserEquipmentLTE {
         super();
         this.id = id;
         this.loc = loc;
-        this.dataRequest = dataRequest;
+        this.dataRateRequest = dataRequest;
         this.signalStrength = signalStrength;
         this.nearestBaseStation = nearestBaseStation;
         this.associatedBTS = associatedBTS;
@@ -127,23 +128,18 @@ public class UserEquipmentLTE {
         double[] powerRecArr = new double[7];
         for(int i=0;i<ParamsLTE.NUM_NEAR_BS;i++){
             double powerRec = ConvertWattTodBm(ConvertdBmToWatt(ParamsLTE.TX_POWER)/100) - (17.9 + 31.6*Math.log10(nearestBaseStation.get(i).getDist()));
-            //System.out.println("power rec: " + powerRec);
             powerRecArr[i] = powerRec;
         }
         double sinri = 0, sinroi = 0, signal;
         for(int i=0; i<ParamsLTE.NUM_NEAR_BS; i++){
             sinri = ConvertdBmToWatt(powerRecArr[i]);
-            //System.out.println("sinri: " + sinri);
             sinroi = 0;
             for(int j=0; j<ParamsLTE.NUM_NEAR_BS; j++){
                 if(j!=i){
                     sinroi = sinroi + ConvertdBmToWatt(powerRecArr[j]);
                 }
             }
-            //System.out.println("sinroi: " + sinroi);
-            //System.out.println("noise: " + ConvertdBToWatt(Params.NOISE));
             signal = sinri/(sinroi + ConvertdBToWatt(ParamsLTE.NOISE));
-            //System.out.println("signal: " + ConvertWattTodBm(signal));
             signalStrength.add(ConvertWattTodBm(signal));
             
         }
@@ -206,11 +202,11 @@ public class UserEquipmentLTE {
     	Random rand = new Random();
     	int perc = rand.nextInt(ParamsLTE.USR_DATA_DISTR[2]+1);
     	if(perc <= ParamsLTE.USR_DATA_DISTR[0]) {
-    		dataRequest = ParamsLTE.DATARATE[0];
+    		dataRateRequest = ParamsLTE.DATARATE[0];
     	} else if(perc > ParamsLTE.USR_DATA_DISTR[0] && perc <= ParamsLTE.USR_DATA_DISTR[1]) {
-    		dataRequest = ParamsLTE.DATARATE[1];
+    		dataRateRequest = ParamsLTE.DATARATE[1];
     	} else {
-    		dataRequest = ParamsLTE.DATARATE[2];
+    		dataRateRequest = ParamsLTE.DATARATE[2];
     	}
     }
 }

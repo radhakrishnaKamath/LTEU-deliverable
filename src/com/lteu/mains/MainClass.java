@@ -31,14 +31,11 @@ public class MainClass {
 		ueList = Services.createUsers(apList);
 		/* Association of users to APs */
 		services.associateUsersToAPs(ueList, apList);
-//		for(AccessPoint ap: apList) {
-//			System.out.println(ap.getAssociatedUEList().size());
-//		}
 		/* Initialization of LTE simulation environment */
 		bts = servicesLTE.CreateBS(apList);
 		ue = servicesLTE.CreateUE(bts, apList);
 		
-		double scalingFactor = Params.NO_OF_AP/2;
+		double scalingFactor = Params.NO_OF_AP;
 		
 		if(scalingFactor == 0) {
 			scalingFactor = 1;
@@ -58,10 +55,6 @@ public class MainClass {
 		/* simulation */
 		/* simulation runs in steps of SIFS, because SIFS is the smallest unit */
  		
-		
-		
-		
-		
 		for(BaseStation bs:bts) {
 			List<AccessPoint> ap = bs.getAccessPoint();
 			bs.initLTEU();
@@ -69,11 +62,11 @@ public class MainClass {
 			double cost;   
 			boolean initFlag = true;
 			for(long time = 0; time < Params.SIM_DURATION;) {
-				for(int slotPercent=0; slotPercent<=ParamsLTE.DUTY_CYCLE_SPLIT*Params.NO_OF_AP; slotPercent+=Params.SIFS, time +=Params.SIFS)
+				for(int slotPercent=0; slotPercent<=ParamsLTE.DUTY_CYCLE_SPLIT; slotPercent+=Params.SIFS, time +=Params.SIFS)
 				{
 					//0.2*ParamsLTE.DUTY_CYCLE 
 					
-					if(slotPercent <= timeLTEU*ParamsLTE.DUTY_CYCLE * scalingFactor) {
+					if(slotPercent <= timeLTEU*ParamsLTE.DUTY_CYCLE) {
 						int userDataRateReq[] = new int [] {0, 0, 0};
 						int totalData = 0;
 						
@@ -128,7 +121,6 @@ public class MainClass {
 								}
 								totalData = ParamsLTE.CQI_MCS.get(ParamsLTE.SINR_CQI.indexOf(sinr)) * ParamsLTE.RE; 
 								
-								//change needed
 								if(ue.getDataRequest() == ParamsLTE.DATARATE[2]) {
 									userDataRateReq[2]++;
 								} else if(ue.getDataRequest() == ParamsLTE.DATARATE[1]) {
@@ -141,19 +133,20 @@ public class MainClass {
 							int totalReq = ParamsLTE.DATARATE[0] * userDataRateReq[0] + 
 										ParamsLTE.DATARATE[1] * userDataRateReq[1] + 
 										ParamsLTE.DATARATE[2] * userDataRateReq[2];
-							//zSystem.out.println("totalreq for a Bts " + totalReq);
 							int totalDataAvail = totalData * totalRB / 1024;
 							
 							for(UserEquipmentLTE ue: bs.getUsersAssociated()) {
-								
 								if(ue.getDataRequest() == ParamsLTE.DATARATE[2]) {
 									double data = ParamsLTE.DATARATE[2]*totalDataAvail / totalReq;
+									double ratio = ParamsLTE.DATARATE[2]/totalReq;
 									ue.setDataRec(data);
-								} else if(ue.getDataRequest() == ParamsLTE.DATARATE[1]) {
+								} else if(ue.getDataRequest() == ParamsLTE.DATARATE[1]) { 
 									double data = ParamsLTE.DATARATE[1]*totalDataAvail / totalReq;
+									double ratio = ParamsLTE.DATARATE[1]/totalReq;
 									ue.setDataRec(data);
 								} else {
 									double data = ParamsLTE.DATARATE[0]*totalDataAvail / totalReq;
+									double ratio = ParamsLTE.DATARATE[0]/totalReq;
 									ue.setDataRec(data);
 								}
 								bs.updateCLAA(totalData*totalRB/slotPercent); //(8 * 1024 * 1024)); ParamsLTE.DUTY_CYCLE
@@ -162,15 +155,11 @@ public class MainClass {
 							
 							if(slotPercent == timeLTEU*ParamsLTE.DUTY_CYCLE) {
 								cost = bs.calculateCost();
-								//System.out.println(bs.getCLAA(timeLTE * Params.SIFS));
 								bs.setNextState(bs.nextState());
 								bs.minAction();
 								bs.update(bs.getCurrState(), timeLTEU, cost);
 								bs.updateCurrState();
-								//System.out.println("id: " + bs.getId() + " cLAA: " + bs.getCLAA());
 							}	
-						} else {
-							//System.out.println("LTE is not transmitting @ slotPercent: " + slotPercent);
 						}
 					} else {
 						initFlag = true;
@@ -178,7 +167,6 @@ public class MainClass {
 							accpoint.setChannelAsFree();
 							/* if this accpoint is scheduled to start at this time */
 							if(accpoint.getTxStartTime() == time) {
-								// System.out.println(ap.getId() + " is scheduled at " + time);
 								/* check whether the channel is busy */
 								if(accpoint.waitedDIFS() == false) {
 									/* if channel not busy wait for DIFS time */
@@ -186,7 +174,6 @@ public class MainClass {
 									accpoint.waitForDIFS();						
 								} else {
 									/* lock the channel */
-									//System.out.println("AP " + ap.getId() + " started at time " + time);
 									accpoint.setChannelAsBusy();
 									/* send data */
 					            }
@@ -210,8 +197,6 @@ public class MainClass {
 							
 							/* set the channel free after the data transmission is completed */
 					        if( accpoint.getTxStartTime() + accpoint.getTxDuration() + Params.SIFS == time) {
-					        	//System.out.println("accpoint " + accpoint.getId() + " is completed at " + time);
-					        	//System.out.println("accpoint: " + accpoint.getId() + " will call ue.updateThroughput");
 					        	for(UserEquipment ue :accpoint.getAssociatedUEList()) {
 					        		ue.updateThroughput(accpoint.getTxDuration());
 					        	}
@@ -221,9 +206,7 @@ public class MainClass {
 					    		// services.printAPSchedule(apList);
 					        }
 					        if(slotPercent==ParamsLTE.DUTY_CYCLE_SPLIT && accpoint.getTxStartTime() + accpoint.getTxDuration() + Params.SIFS < time) {
-				        	//	System.out.println("ap: " + ap.getId() + " will call ue.updateThroughput");
-					        	//System.out.println("AP " + ap.getId() + " is completed at " + time);
-					        	for(UserEquipment ue :accpoint.getAssociatedUEList()) {
+				        		for(UserEquipment ue :accpoint.getAssociatedUEList()) {
 					        		ue.updateThroughput(time - accpoint.getTxStartTime());
 					        	}
 					        	
@@ -237,54 +220,12 @@ public class MainClass {
 				}
 				initFlag = true;
 			}
-			//ap.getAvgThroughput();
-			//System.out.println("Avg thruput: " + bs.averageThroughput() + " avg satis: " + bs.averageSatis() + 
-			//" wifi throughput: " + ap.getAvgThroughput());
-			//System.out.println("id: " + ap.getId() + " wifi throughput: " + ap.getAvgThroughput());
-}
+		}
 		double a = btsThroughput()/1024;
 		double b = wifiThroughput();
 		
-		System.out.println("Avg thruput: " + a + " wifi throughput: " + b + " user satisfaction: " + btsSatisfaction() + 
-				" jain fairness: " + jainFairness(a, b));
-		//System.out.println(" wifi throughput: " + b);
-		//------------- lte start ---------------
-		// = new Services();
-		
-		//double sum1 = 0, sum2 = 0;
-		//for(int j=0; j<ParamsLTE.TRIALS; j++){
-			//for(int i=0; i<bts.size(); i++){
-				//avgSINR[i] = avgSINR[i] + bts.get(i).averageSINR(); // taking avg value over all bts
-				//avgUserAssoc[i] = avgUserAssoc[i] + bts.get(i).getUsersAssociated().size(); // taking avg value over all bts
-				//sum1 = sum1 + bts.get(j).getUsersAssociated().size();  // for taking a avg value
-			//}
-//			for(int k=0; k < bts.get(0).getUsersAssociated().size(); k++) {
-//				System.out.println(bts.get(0).getUsersAssociated().get(k).getSINR());
-//			}
-			//sum2 = sum2 + sum1/bts.size();
-		//}
-		//System.out.println(sum2/Params.TRIALS); // avg value
-		//for(int j=0; j<ParamsLTE.NUM_BASE_STATIONS; j++){
-		//	avgSINR[j] = avgSINR[j]/ParamsLTE.TRIALS;
-			//avgUserAssoc[j] = avgUserAssoc[j]/ParamsLTE.TRIALS;
-			//System.out.println(avgUserAssoc[j]);
-		//} //avgUserAssoc1[j] + " " +
-		
-		//------------- lte finish ---------------
-		
-		//------------- wifi start ---------------
-		
-		
-		//Params.SIM_DURATION = 2000;
-		//System.out.println("simulation duration" + Params.SIM_DURATION);
-		
-		
-		
-		/* Find neighbours of APs */
-		//services.findNeighbours(apList);
-		
-		//------------- wifi finish ---------------
-		
+		System.out.println("Avg thruput: " + a + " wifi throughput: " + b + " LTE user satisfaction: " + btsSatisfaction() + 
+				" jain fairness: " + jainFairness(a/(ParamsLTE.TARGET_DATA_REQ/1024), b/Params.TARGET_DATA_REQ));
 	}
 	
 	static double jainFairness(double a, double b) {
@@ -308,7 +249,6 @@ public class MainClass {
 		double thrput = 0;
 		int count=0;
 		for(BaseStation bs:bts) {
-			//System.out.println("bs id: " + bs.getId() + " avg thrput: " + bs.averageThroughput());
 			if(bs.averageThroughput()!=0) {
 				thrput = thrput + bs.averageThroughput();
 				count++;
@@ -324,6 +264,18 @@ public class MainClass {
 		for(BaseStation bs:bts) {
 			if(bs.averageSatis()!=0) {
 				satis = satis + bs.averageSatis();
+				count++;
+			}
+		}
+		return satis/count;
+	}
+	
+	static double wifiSatisfaction() {
+		double satis = 0;
+		int count=0;
+		for(AccessPoint ap:apList) {
+			if(ap.averageSatis()!=0) {
+				satis = satis + ap.averageSatis();
 				count++;
 			}
 		}

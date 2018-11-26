@@ -62,6 +62,7 @@ public class BaseStation {
     	}
 		return (jainFairness(averageThroughput()/1024, (thrput/accessPoint.size())) * (satis/accessPoint.size()) * averageSatis())/
 				(Math.abs(cTar-cLAA) * (cost/accessPoint.size()));
+    	//return Math.abs(cTar-cLAA);
 	}
     
     double jainFairness(double a, double b) {
@@ -97,10 +98,6 @@ public class BaseStation {
     public void updateCLAA(double i) {
     	cLAA = cLAA + i;
     }
-    
-//    public void updateCTAR(int i) {
-//    	cTar = cTar + i;
-//    }
     
     public double getCLAA() {
     	//System.out.println(cLAA);

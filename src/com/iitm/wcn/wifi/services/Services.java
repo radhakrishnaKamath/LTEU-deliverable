@@ -64,7 +64,6 @@ public class Services {
                     int y = j*100/Params.NO_OF_AP + randY.nextInt(100);
                     apLoc = new Location(x,y);
                     
-                    //System.out.println("loc: x: " + bsLoc.getX() + " y: " + bsLoc.getY());
                     ArrayList<UserEquipmentLTE> ue = new ArrayList<UserEquipmentLTE>();
                     ap = new AccessPoint((5*i*Params.NO_OF_AP)+j+k, apLoc, txStartTime, txDuration, seed.nextLong());
                     apList.add(ap);
@@ -86,7 +85,6 @@ public class Services {
 			
 		for( AccessPoint ap: apList ) {
 			apLoc = ap.getLoc();
-			//System.out.println("AP " + ap.getId() + " AP loc X " + ap.getLoc().getX() + " AP loc Y " + ap.getLoc().getY());
 			for( int j = 0; j < Params.USERS_PER_AP; ++j) {
 				theta = (randTheta.nextInt(360)) * Math.PI / 180;
 				r = randR.nextInt(Params.AP_RANGE);

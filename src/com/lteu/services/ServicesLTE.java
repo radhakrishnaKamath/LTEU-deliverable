@@ -140,7 +140,6 @@ public class ServicesLTE{
 				i--;
 				continue;
 			}
-            //System.out.println("loc: x: " + ueLoc.getX() + " y: " + ueLoc.getY());
             List<BaseStationDistance> distArr = new ArrayList<BaseStationDistance>();
             distArr.add(new BaseStationDistance(bs, ueLoc.distanceTo(bs.getLocation())));
             List<BaseStationDistance> nearBaseStations = (List<BaseStationDistance>) distArr;

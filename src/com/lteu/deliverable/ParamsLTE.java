@@ -56,11 +56,13 @@ public class ParamsLTE {
 	
 	public static int RE = SUBCARRIERS * SYMBOLS; //RE in 1 RB
 	
-	public static int RB = 200; //in one subframe
+	public static int RB = 200; //in one subrame
 	
 	public static int SUBFRAME_DUR = 1; //in millisec
 	
-	public static int DUTY_CYCLE = 1000; //in millisec
+	public static int DUTY_CYCLE = 2000; //in millisec
 	
 	public static int DUTY_CYCLE_SPLIT = 20000; //in percentage 10% smallest 
+	
+	public static double TARGET_DATA_REQ = 12*1024;
 }
