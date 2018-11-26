@@ -236,11 +236,8 @@ public class MainClass {
 		double thrput = 0;
 		int count=0;
 		for(AccessPoint ap:apList) {
-			if(ap.getAvgThroughput()<5) {
-				thrput = thrput + ap.getAvgThroughput();
-				count++;
-			}
-			
+			thrput = thrput + ap.getAvgThroughput();
+			count++;
 		}
 		return thrput/count;
 	}
@@ -249,11 +246,8 @@ public class MainClass {
 		double thrput = 0;
 		int count=0;
 		for(BaseStation bs:bts) {
-			if(bs.averageThroughput()!=0) {
-				thrput = thrput + bs.averageThroughput();
-				count++;
-			}
-			
+			thrput = thrput + bs.averageThroughput();
+			count++;
 		}
 		return thrput/count;
 	}
@@ -262,10 +256,8 @@ public class MainClass {
 		double satis = 0;
 		int count=0;
 		for(BaseStation bs:bts) {
-			if(bs.averageSatis()!=0) {
-				satis = satis + bs.averageSatis();
-				count++;
-			}
+			satis = satis + bs.averageSatis();
+			count++;
 		}
 		return satis/count;
 	}
@@ -274,10 +266,8 @@ public class MainClass {
 		double satis = 0;
 		int count=0;
 		for(AccessPoint ap:apList) {
-			if(ap.averageSatis()!=0) {
-				satis = satis + ap.averageSatis();
-				count++;
-			}
+			satis = satis + ap.averageSatis();
+			count++;
 		}
 		return satis/count;
 	}

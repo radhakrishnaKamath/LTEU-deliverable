@@ -6,6 +6,7 @@ import java.util.Random;
 
 import com.iitm.wcn.wifi.entities.AccessPoint;
 import com.iitm.wcn.wifi.entities.Location;
+import com.iitm.wcn.wifi.params.Params;
 import com.lteu.deliverable.LocationLTE;
 import com.lteu.deliverable.UserEquipmentLTE;
 
@@ -60,7 +61,7 @@ public class BaseStation {
     		satis = satis + ap.satisfaction(); 
     		cost = cost + ap.cost();
     	}
-		return (jainFairness(averageThroughput()/1024, (thrput/accessPoint.size())) * (satis/accessPoint.size()) * averageSatis())/
+		return (jainFairness((averageThroughput()/1024)/ParamsLTE.TARGET_DATA_REQ, (thrput/accessPoint.size())/Params.TARGET_DATA_REQ) * (satis/accessPoint.size()) * averageSatis())/
 				(Math.abs(cTar-cLAA) * (cost/accessPoint.size()));
     	//return Math.abs(cTar-cLAA);
 	}
